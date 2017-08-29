@@ -84,6 +84,7 @@ class MenuTest extends MenuWebTestBase {
 
     $this->menu = $this->addCustomMenu();
     $this->doMenuTests();
+    $this->doMenuReparentTests();
     $this->doTestMenuBlock();
     $this->addInvalidMenuLink();
     $this->addCustomMenuCRUD();
@@ -467,6 +468,54 @@ class MenuTest extends MenuWebTestBase {
     // Save menu links for later tests.
     $this->items[] = $item1;
     $this->items[] = $item2;
+  }
+
+  /**
+   * Tests menu reparent functionality.
+   */
+  function doMenuReparentTests() {
+    $menu_name = $this->menu->id();
+
+    // Add nodes to use as links for menu links.
+    $node1 = $this->drupalCreateNode(array('type' => 'article'));
+    $node2 = $this->drupalCreateNode(array('type' => 'article'));
+    $node3 = $this->drupalCreateNode(array('type' => 'article'));
+    $node4 = $this->drupalCreateNode(array('type' => 'article'));
+    $node5 = $this->drupalCreateNode(array('type' => 'article'));
+    $node6 = $this->drupalCreateNode(array('type' => 'article'));
+
+    // Add menu links.
+    $item1 = $this->addMenuLink('', '/node/' . $node1->id(), $menu_name, TRUE);
+    $item2 = $this->addMenuLink($item1->getPluginId(), '/node/' . $node2->id(), $menu_name, FALSE);
+    $item3 = $this->addMenuLink($item2->getPluginId(), '/node/' . $node3->id(), $menu_name);
+    $item4 = $this->addMenuLink($item3->getPluginId(), '/node/' . $node4->id(), $menu_name);
+    $item5 = $this->addMenuLink($item4->getPluginId(), '/node/' . $node5->id(), $menu_name);
+    $item6 = $this->addMenuLink($item5->getPluginId(), '/node/' . $node6->id(), $menu_name);
+
+    // Hierarchy
+    // <$menu_name>
+    // - item1
+    // -- item2
+    // --- item3
+    // ---- item4
+    // ----- item5
+    // ------ item6
+
+    // Move link and verify that descendants are updated.
+    $edit = array();
+    $edit['links[menu_plugin_id:' . $item6->getPluginId() . '][parent]'] = '';
+    $edit['links[menu_plugin_id:' . $item1->getPluginId() . '][parent]'] = $item6->getPluginId();
+    $this->drupalPostForm('admin/structure/menu/manage/' . $item1->getMenuName(), $edit, t('Save'));
+
+    // Hierarchy
+    // <$menu_name>
+    // - item6
+    // -- item1
+    // --- item2
+    // ---- item3
+    // ----- item4
+    // ------ item5
+
   }
 
   /**
