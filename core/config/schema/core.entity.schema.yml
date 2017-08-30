@@ -227,6 +227,9 @@ field.widget.settings.entity_reference_autocomplete_tags:
     match_operator:
       type: string
       label: 'Autocomplete matching'
+    match_size:
+      type: integer
+      label: 'Number of autocomplete suggestions.'
     size:
       type: integer
       label: 'Size of textfield'
@@ -241,6 +244,9 @@ field.widget.settings.entity_reference_autocomplete:
     match_operator:
       type: string
       label: 'Autocomplete matching'
+    match_size:
+      type: integer
+      label: 'Number of autocomplete suggestions.'
     size:
       type: integer
       label: 'Size of textfield'

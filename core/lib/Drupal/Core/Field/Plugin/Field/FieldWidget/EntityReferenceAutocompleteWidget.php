@@ -28,6 +28,7 @@ class EntityReferenceAutocompleteWidget extends WidgetBase {
   public static function defaultSettings() {
     return [
       'match_operator' => 'CONTAINS',
+      'match_size' => 10,
       'size' => '60',
       'placeholder' => '',
     ] + parent::defaultSettings();
@@ -43,6 +44,13 @@ class EntityReferenceAutocompleteWidget extends WidgetBase {
       '#default_value' => $this->getSetting('match_operator'),
       '#options' => $this->getMatchOperatorOptions(),
       '#description' => t('Select the method used to collect autocomplete suggestions. Note that <em>Contains</em> can cause performance issues on sites with thousands of entities.'),
+    ];
+    $element['match_size'] = [
+      '#type' => 'number',
+      '#title' => t('Number of results'),
+      '#default_value' => $this->getSetting('match_size'),
+      '#min' => 0,
+      '#description' => t('The number of suggestions that will be listed. Use <em>0</em> to remove the limit.'),
     ];
     $element['size'] = [
       '#type' => 'number',
@@ -68,6 +76,7 @@ class EntityReferenceAutocompleteWidget extends WidgetBase {
 
     $operators = $this->getMatchOperatorOptions();
     $summary[] = t('Autocomplete matching: @match_operator', ['@match_operator' => $operators[$this->getSetting('match_operator')]]);
+    $summary[] = t('Autocomplete suggestion list size: @size', ['@size' => $this->getSetting('match_size')]);
     $summary[] = t('Textfield size: @size', ['@size' => $this->getSetting('size')]);
     $placeholder = $this->getSetting('placeholder');
     if (!empty($placeholder)) {
@@ -88,8 +97,10 @@ class EntityReferenceAutocompleteWidget extends WidgetBase {
     $referenced_entities = $items->referencedEntities();
 
     // Append the match operation to the selection settings.
-    $selection_settings = $this->getFieldSetting('handler_settings') + ['match_operator' => $this->getSetting('match_operator')];
-
+    $selection_settings = $this->getFieldSetting('handler_settings') + [
+        'match_operator' => $this->getSetting('match_operator'),
+        'match_size' => $this->getSetting('match_size'),
+      ];
     $element += [
       '#type' => 'entity_autocomplete',
       '#target_type' => $this->getFieldSetting('target_type'),
