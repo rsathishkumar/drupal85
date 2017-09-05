@@ -84,7 +84,6 @@ class MenuTest extends MenuWebTestBase {
 
     $this->menu = $this->addCustomMenu();
     $this->doMenuTests();
-    $this->doMenuReparentTests();
     $this->doTestMenuBlock();
     $this->addInvalidMenuLink();
     $this->addCustomMenuCRUD();
@@ -468,80 +467,6 @@ class MenuTest extends MenuWebTestBase {
     // Save menu links for later tests.
     $this->items[] = $item1;
     $this->items[] = $item2;
-    $this->items[] = $item3;
-    $this->items[] = $item4;
-    $this->items[] = $item5;
-    $this->items[] = $item6;
-  }
-
-  /**
-   * Tests menu reparent functionality.
-   */
-  function doMenuReparentTests() {
-
-    $menu_name = $this->menu->id();
-
-    $item1 = $this->items[0];
-    $item2 = $this->items[1];
-    $item3 = $this->items[2];
-    $item4 = $this->items[3];
-    $item5 = $this->items[4];
-    $item6 = $this->items[5];
-
-    // Hierarchy
-    // <$menu_name>
-    // - item1
-    // - item4
-    // -- item5
-    // --- item2
-    // ---- item3
-    // -- item6
-
-    // Move link and verify that descendants are updated.
-    $this->moveMenuLink($item4, $item1->getPluginId(), $menu_name);
-    $this->moveMenuLink($item6, $item3->getPluginId(), $menu_name);
-
-    // Hierarchy
-    // <$menu_name>
-    // - item1
-    // -- item4
-    // --- item5
-    // ---- item2
-    // ----- item3
-    // ------ item6
-
-    $this->assertMenuLink($item1->getPluginId(), [
-      'children' => [$item4->getPluginId(), $item5->getPluginId(), $item6->getPluginId(), $item2->getPluginId(), $item3->getPluginId()],
-      'parents' => [$item1->getPluginId()],
-      // See above.
-      'langcode' => 'en',
-    ]);
-    $this->assertMenuLink($item4->getPluginId(), [
-      'children' => [$item5->getPluginId(), $item6->getPluginId(), $item2->getPluginId(), $item3->getPluginId()],
-      'parents' => [$item1->getPluginId(),$item4->getPluginId()],
-      // See above.
-      'langcode' => 'en',
-    ]);
-
-    $this->assertMenuLink($item5->getPluginId(), [
-      'children' => [$item2->getPluginId(), $item3->getPluginId(),$item6->getPluginId()],
-      'parents' => [$item1->getPluginId(),$item5->getPluginId(), $item4->getPluginId()],
-      // See above.
-      'langcode' => 'en',
-    ]);
-    $this->assertMenuLink($item2->getPluginId(), [
-      'children' => [$item3->getPluginId(),$item6->getPluginId()],
-      'parents' => [$item1->getPluginId(), $item2->getPluginId(), $item5->getPluginId(), $item4->getPluginId()],
-      // See above.
-      'langcode' => 'en',
-    ]);
-    $this->assertMenuLink($item3->getPluginId(), [
-      'children' => [$item6->getPluginId()],
-      'parents' => [$item1->getPluginId(), $item3->getPluginId(), $item2->getPluginId(), $item5->getPluginId(), $item4->getPluginId()],
-      // See above.
-      'langcode' => 'en',
-    ]);
-
   }
 
   /**

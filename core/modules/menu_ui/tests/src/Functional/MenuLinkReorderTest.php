@@ -41,7 +41,7 @@ class MenuLinkReorderTest extends BrowserTestBase {
     $this->administrator = $this->drupalCreateUser([
       'administer site configuration',
       'access administration pages',
-      'administer menu',
+      'administer menu',8
     ]);
     $this->drupalLogin($this->administrator);
 

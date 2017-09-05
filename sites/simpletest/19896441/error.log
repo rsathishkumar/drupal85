@@ -1,0 +1,28 @@
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP Fatal error:  Call to a member function label() on null in /private/var/www/drupal8_5/core/modules/menu_ui/src/Tests/MenuTest.php on line 801
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP Stack trace:
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   1. {main}() /private/var/www/drupal8_5/index.php:0
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   2. Drupal\Core\DrupalKernel->handle() /private/var/www/drupal8_5/index.php:19
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   3. Stack\StackedHttpKernel->handle() /private/var/www/drupal8_5/core/lib/Drupal/Core/DrupalKernel.php:656
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   4. Drupal\Core\StackMiddleware\NegotiationMiddleware->handle() /private/var/www/drupal8_5/vendor/stack/builder/src/Stack/StackedHttpKernel.php:23
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   5. Drupal\Core\StackMiddleware\ReverseProxyMiddleware->handle() /private/var/www/drupal8_5/core/lib/Drupal/Core/StackMiddleware/NegotiationMiddleware.php:50
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   6. Drupal\page_cache\StackMiddleware\PageCache->handle() /private/var/www/drupal8_5/core/lib/Drupal/Core/StackMiddleware/ReverseProxyMiddleware.php:47
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   7. Drupal\page_cache\StackMiddleware\PageCache->pass() /private/var/www/drupal8_5/core/modules/page_cache/src/StackMiddleware/PageCache.php:78
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   8. Drupal\Core\StackMiddleware\KernelPreHandle->handle() /private/var/www/drupal8_5/core/modules/page_cache/src/StackMiddleware/PageCache.php:99
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP   9. Drupal\Core\StackMiddleware\Session->handle() /private/var/www/drupal8_5/core/lib/Drupal/Core/StackMiddleware/KernelPreHandle.php:47
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  10. Symfony\Component\HttpKernel\HttpKernel->handle() /private/var/www/drupal8_5/core/lib/Drupal/Core/StackMiddleware/Session.php:57
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  11. Symfony\Component\HttpKernel\HttpKernel->handleRaw() /private/var/www/drupal8_5/vendor/symfony/http-kernel/HttpKernel.php:68
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  12. call_user_func_array:{/private/var/www/drupal8_5/vendor/symfony/http-kernel/HttpKernel.php:153}() /private/var/www/drupal8_5/vendor/symfony/http-kernel/HttpKernel.php:153
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  13. Drupal\Core\EventSubscriber\EarlyRenderingControllerWrapperSubscriber->Drupal\Core\EventSubscriber\{closure}() /private/var/www/drupal8_5/vendor/symfony/http-kernel/HttpKernel.php:153
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  14. Drupal\Core\EventSubscriber\EarlyRenderingControllerWrapperSubscriber->wrapControllerExecutionInRenderContext() /private/var/www/drupal8_5/core/lib/Drupal/Core/EventSubscriber/EarlyRenderingControllerWrapperSubscriber.php:97
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  15. Drupal\Core\Render\Renderer->executeInRenderContext() /private/var/www/drupal8_5/core/lib/Drupal/Core/EventSubscriber/EarlyRenderingControllerWrapperSubscriber.php:124
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  16. Drupal\Core\EventSubscriber\EarlyRenderingControllerWrapperSubscriber->Drupal\Core\EventSubscriber\{closure}() /private/var/www/drupal8_5/core/lib/Drupal/Core/Render/Renderer.php:574
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  17. call_user_func_array:{/private/var/www/drupal8_5/core/lib/Drupal/Core/EventSubscriber/EarlyRenderingControllerWrapperSubscriber.php:123}() /private/var/www/drupal8_5/core/lib/Drupal/Core/EventSubscriber/EarlyRenderingControllerWrapperSubscriber.php:123
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  18. Drupal\system\Controller\BatchController->batchPage() /private/var/www/drupal8_5/core/lib/Drupal/Core/EventSubscriber/EarlyRenderingControllerWrapperSubscriber.php:123
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  19. _batch_page() /private/var/www/drupal8_5/core/modules/system/src/Controller/BatchController.php:55
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  20. _batch_do() /private/var/www/drupal8_5/core/includes/batch.inc:93
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  21. _batch_process() /private/var/www/drupal8_5/core/includes/batch.inc:137
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  22. call_user_func_array:{/private/var/www/drupal8_5/core/includes/batch.inc:294}() /private/var/www/drupal8_5/core/includes/batch.inc:294
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  23. _simpletest_batch_operation() /private/var/www/drupal8_5/core/includes/batch.inc:294
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  24. Drupal\simpletest\TestBase->run() /private/var/www/drupal8_5/core/modules/simpletest/simpletest.module:430
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  25. Drupal\menu_ui\Tests\MenuTest->testMenu() /private/var/www/drupal8_5/core/modules/simpletest/src/TestBase.php:960
+[05-Sep-2017 17:07:05 Australia/Sydney] PHP  26. Drupal\menu_ui\Tests\MenuTest->verifyMenuLink() /private/var/www/drupal8_5/core/modules/menu_ui/src/Tests/MenuTest.php:108

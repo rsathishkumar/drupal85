@@ -24,11 +24,11 @@
     <!-- Do not limit the amount of memory tests take to run. -->
     <ini name="memory_limit" value="-1"/>
     <!-- Example SIMPLETEST_BASE_URL value: http://localhost -->
-    <env name="SIMPLETEST_BASE_URL" value=""/>
+    <env name="SIMPLETEST_BASE_URL" value="http://drupal8_5/"/>
     <!-- Example SIMPLETEST_DB value: mysql://username:password@localhost/databasename#table_prefix -->
-    <env name="SIMPLETEST_DB" value=""/>
+      <env name="SIMPLETEST_DB" value="mysql://root:root@localhost/drupal8_5"/>
     <!-- Example BROWSERTEST_OUTPUT_DIRECTORY value: /path/to/webroot/sites/simpletest/browser_output -->
-    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value=""/>
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="/var/www/sites/default/files/simpletest"/>
   </php>
   <testsuites>
     <testsuite name="unit">
