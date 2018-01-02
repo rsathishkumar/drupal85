@@ -5,8 +5,10 @@ namespace Drupal\Tests\views\Unit\Plugin\field;
 use Drupal\Tests\UnitTestCase;
 use Drupal\views\Entity\View;
 use Drupal\views\Plugin\views\field\Counter;
+use Drupal\views\Plugin\views\field\Custom;
 use Drupal\views\ResultRow;
 use Drupal\views\Tests\ViewTestData;
+use Drupal\views\ViewsData;
 
 /**
  * @coversDefaultClass \Drupal\views\Plugin\views\field\Counter
@@ -112,6 +114,17 @@ class CounterTest extends UnitTestCase {
    */
   public function testSimpleCounter($i) {
     $counter_handler = new Counter([], 'counter', $this->definition);
+    $custom_handler = new Custom([], 'custom', $this->definition);
+    $custom_handler->options['alter']['text'] = '{% if counter is even %}EVEN{% endif %}';
+    $custom_handler->options['alter']['text'] = '{% if counter is even %}EVEN{% endif %}';
+    $this->testData[$i]->options['alter']['text'] = '{% if counter is even %}EVEN{% endif %}';
+    $v = $custom_handler->render($this->testData[$i]);
+    $custom_handler->last_render = $v;
+    $custom_handler->original_value = $v;
+    $custom_handler->options['hide_alter_empty'] = false;
+    $custom_handler->options['hide_empty'] = false;
+    $alter = ['phase' => 1] + $custom_handler->options['alter'];
+    $value = $custom_handler->renderText($alter);
     $options = [];
     $counter_handler->init($this->view, $this->display, $options);
 

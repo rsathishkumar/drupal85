@@ -4,6 +4,8 @@ namespace Drupal\views\Plugin\views\field;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\ResultRow;
+use Drupal\views\Render\ViewsRenderPipelineMarkup;
+use Drupal\Component\Utility\Xss;
 
 /**
  * Field handler to show a counter of the current row.
@@ -52,6 +54,13 @@ class Counter extends FieldPluginBase {
    */
   public function query() {
     // do nothing -- to override the parent query.
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function render(ResultRow $values) {
+    return $this->getValue($values);
   }
 
   /**
