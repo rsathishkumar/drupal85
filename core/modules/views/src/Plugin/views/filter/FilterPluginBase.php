@@ -606,7 +606,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       '#default_value' => $this->options['expose']['identifier'],
       '#title' => $this->t('Filter identifier'),
       '#size' => 40,
-      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed.'),
+      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed. "q" is a reserved word and cannot be used.'),
     ];
   }
 
@@ -904,7 +904,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       '#default_value' => $identifier,
       '#title' => $this->t('Filter identifier'),
       '#size' => 40,
-      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed.'),
+      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed. "q" is a reserved word and cannot be used.'),
     ];
     $form['group_info']['label'] = [
       '#type' => 'textfield',
@@ -958,7 +958,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       '#default_value' => $identifier,
       '#title' => $this->t('Filter identifier'),
       '#size' => 40,
-      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed.'),
+      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed. "q" is a reserved word and cannot be used.'),
     ];
     $form['group_info']['label'] = [
       '#type' => 'textfield',
