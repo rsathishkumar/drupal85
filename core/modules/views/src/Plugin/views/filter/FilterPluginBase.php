@@ -699,7 +699,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
     if (empty($identifier)) {
       $error = $this->t('The identifier is required if the filter is exposed.');
     }
-    elseif ($identifier == 'value') {
+    elseif ($identifier == 'value'|| $identifier == 'q') {
       $error = $this->t('This identifier is not allowed.');
     }
     elseif (preg_match('/[^a-zA-z0-9_~\.\-]/', $identifier)) {
