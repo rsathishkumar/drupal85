@@ -143,6 +143,38 @@ class ExposedFormTest extends ViewTestBase {
       'page_1' => ['This identifier has illegal characters.'],
     ];
     $this->assertEqual($errors, $expected);
+
+    // Alter the identifier of the filter to a random string containing
+    // string 'q'.
+    $view = Views::getView('test_exposed_form_buttons');
+    $view->setDisplay();
+    $identifier = 'q';
+    $view->displayHandlers->get('default')->overrideOption('filters', [
+      'type' => [
+        'exposed' => TRUE,
+        'field' => 'type',
+        'id' => 'type',
+        'table' => 'node_field_data',
+        'plugin_id' => 'in_operator',
+        'entity_type' => 'node',
+        'entity_field' => 'type',
+        'expose' => [
+          'identifier' => $identifier,
+          'label' => 'Content: Type',
+          'operator_id' => 'type_op',
+          'reduce' => FALSE,
+          'description' => 'Exposed overridden description'
+        ],
+      ]
+    ]);
+    $this->executeView($view);
+
+    $errors = $view->validate();
+    $expected = [
+      'default' => ['This identifier is not allowed.'],
+      'page_1' => ['This identifier is not allowed.'],
+    ];
+    $this->assertEqual($errors, $expected);
   }
 
   /**
