@@ -82,6 +82,8 @@ class ContentTranslationRouteSubscriber extends RouteSubscriberBase {
         $path . '/add/{source}/{target}',
         [
           '_controller' => '\Drupal\content_translation\Controller\ContentTranslationController::add',
+          'source' => NULL,
+          'target' => NULL,
           '_title' => 'Add',
           'entity_type_id' => $entity_type_id,
 
