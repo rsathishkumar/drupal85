@@ -8,6 +8,7 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\views\Plugin\views\PluginBase;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\views\Views;
+use Drupal\Core\Plugin\Context\ContextDefinitionInterface;
 
 /**
  * Tests node language fields, filters, and sorting.
@@ -290,6 +291,43 @@ class NodeLanguageTest extends NodeTestBase {
       $this->assertText('French', 'French language shown in English.');
       $this->assertText('Spanish', 'Spanish language shown in English.');
     }
+  }
+
+  /**
+   * Tests native name display in language field.
+   * Drupal issue: https://www.drupal.org/project/drupal/issues/2952252
+   */
+  public function testContextualFilterOverrideTitle() {
+    $view = Views::getView('test_language');
+    $view->setDisplay('page_1');
+
+    $options = [
+      'title_enable' => TRUE,
+      'title' => 'title {{ arguments.nid }}',
+    ];
+
+    $view->initHandlers();
+    $view->removeHandler('page_1', 'argument', 'langcode');
+    $id = $view->addHandler('page_1', 'argument', 'node_field_data', 'nid', $options);
+   // $view->initHandlers();
+    $view->storage->setStatus(TRUE);
+    $view->build();
+    $view->save();
+
+
+    // Make sure view behaves as expected.
+    $this->drupalGet('fr/test-language/1');
+    $page = $this->getSession()->getPage();
+    $title = $page->find('css', '.page-title');
+
+    $this->assertEquals($title->getText(), 'title ' . $this->nodeTitles['fr'][0]);
+
+    $this->drupalGet('es/test-language/1');
+    $page = $this->getSession()->getPage();
+    $title = $page->find('css', '.page-title');
+
+    $this->assertEquals($title->getText(), 'title ' . $this->nodeTitles['es'][0]);
+
   }
 
 }
