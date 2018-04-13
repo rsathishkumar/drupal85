@@ -1,0 +1,10 @@
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP Fatal error:  Call to a member function setDisplay() on null in /private/var/www/drupal8_5/core/modules/node/tests/src/Functional/Views/NodeLanguageTest.php on line 302
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP Stack trace:
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   1. {main}() -:0
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   2. __phpunit_run_isolated_test() -:100
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   3. PHPUnit_Framework_TestCase->run() -:52
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   4. PHPUnit_Framework_TestResult->run() /private/var/www/drupal8_5/vendor/phpunit/phpunit/src/Framework/TestCase.php:724
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   5. PHPUnit_Framework_TestCase->runBare() /private/var/www/drupal8_5/vendor/phpunit/phpunit/src/Framework/TestResult.php:612
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   6. PHPUnit_Framework_TestCase->runTest() /private/var/www/drupal8_5/vendor/phpunit/phpunit/src/Framework/TestCase.php:768
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   7. ReflectionMethod->invokeArgs() /private/var/www/drupal8_5/vendor/phpunit/phpunit/src/Framework/TestCase.php:909
+[21-Mar-2018 14:20:24 Australia/Sydney] PHP   8. Drupal\Tests\node\Functional\Views\NodeLanguageTest->testContextualFilterOverrideTitle() /private/var/www/drupal8_5/vendor/phpunit/phpunit/src/Framework/TestCase.php:909

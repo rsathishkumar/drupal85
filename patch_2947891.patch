@@ -1,0 +1,15 @@
+diff --git a/core/modules/content_translation/src/Routing/ContentTranslationRouteSubscriber.php b/core/modules/content_translation/src/Routing/ContentTranslationRouteSubscriber.php
+index 6aae426..5634a92 100644
+--- a/core/modules/content_translation/src/Routing/ContentTranslationRouteSubscriber.php
++++ b/core/modules/content_translation/src/Routing/ContentTranslationRouteSubscriber.php
+@@ -82,8 +82,8 @@ protected function alterRoutes(RouteCollection $collection) {
+         $path . '/add/{source}/{target}',
+         [
+           '_controller' => '\Drupal\content_translation\Controller\ContentTranslationController::add',
+-          'source' => NULL,
+-          'target' => NULL,
++          'source' => "[a-z]+",
++          'target' => "[a-z]+",
+           '_title' => 'Add',
+           'entity_type_id' => $entity_type_id,
+ 

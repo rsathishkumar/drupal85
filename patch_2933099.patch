@@ -1,0 +1,13 @@
+diff --git a/core/modules/content_moderation/src/EntityOperations.php b/core/modules/content_moderation/src/EntityOperations.php
+index a7fcf7e..2868eae 100644
+--- a/core/modules/content_moderation/src/EntityOperations.php
++++ b/core/modules/content_moderation/src/EntityOperations.php
+@@ -212,7 +212,7 @@ public function entityRevisionDelete(EntityInterface $entity) {
+     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+     if (!$entity->isDefaultRevision()) {
+       $content_moderation_state = ContentModerationStateEntity::loadFromModeratedEntity($entity);
+-      if ($content_moderation_state) {
++      if ($content_moderation_state && !$content_moderation_state->isDefaultRevision()) {
+         $this->entityTypeManager
+           ->getStorage('content_moderation_state')
+           ->deleteRevision($content_moderation_state->getRevisionId());

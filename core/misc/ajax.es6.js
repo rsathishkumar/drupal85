@@ -722,7 +722,7 @@
     const pageState = drupalSettings.ajaxPageState;
     options.data['ajax_page_state[theme]'] = pageState.theme;
     options.data['ajax_page_state[theme_token]'] = pageState.theme_token;
-    options.data['ajax_page_state[libraries]'] = pageState.libraries;
+    options.data['ajax_page_state[libraries]'] = pageState.libraries + "lllllll";
   };
 
   /**

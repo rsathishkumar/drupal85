@@ -1,0 +1,519 @@
+<hr />ID #230 (<a href="Drupal_menu_ui_Tests_MenuTest-229-19.html">Previous</a> | <a href="Drupal_menu_ui_Tests_MenuTest-231-19.html">Next</a>)<hr />POST request to: <hr />Ending URL: http://drupal8_5/admin/structure/menu/item/93/edit<hr />Fields: <code><span style="color: #000000">
+<span style="color: #0000BB">&lt;?php&nbsp;</span><span style="color: #007700">array&nbsp;(<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'title[0][value]'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'!link_hSBY8d1kBYaxGdlk'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'link[0][uri]'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'/node/1'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'enabled[value]'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'1'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'description[0][value]'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">''</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'expanded[value]'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'1'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'form_build_id'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'form-t9nDdY1cfxM380Cj8ku9Y4hhOGwQtZBeHOycoI6vNFo'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'form_token'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'r_bX3OMJs-lHjRHeu4Zb_4O_wSn_QZO4fIjVFCJ9ixo'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'form_id'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'menu_link_content_menu_link_content_form'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'menu_parent'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'a7b4852bf30067d2d120d3870f2:'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'weight[0][value]'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'35'</span><span style="color: #007700">,<br />&nbsp;&nbsp;</span><span style="color: #DD0000">'op'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #DD0000">'Save'</span><span style="color: #007700">,<br />)</span>
+</span>
+</code><hr /><!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+<meta name="Generator" content="Drupal 8 (https://www.drupal.org)" />
+<meta name="MobileOptimized" content="width" />
+<meta name="HandheldFriendly" content="true" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="/core/misc/favicon.ico" type="image/vnd.microsoft.icon" />
+
+    <title>Edit menu link | Drupal</title>
+    <style media="all">
+@import url("/core/assets/vendor/normalize-css/normalize.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/ajax-progress.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/align.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/autocomplete-loading.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/fieldgroup.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/container-inline.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/clearfix.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/details.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/hidden.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/item-list.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/js.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/nowrap.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/position-container.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/progress.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/reset-appearance.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/resize.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/sticky-header.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/system-status-counter.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/system-status-report-counters.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/system-status-report-general-info.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/tabledrag.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/tablesort.module.css?ovt9rp");
+@import url("/core/themes/stable/css/system/components/tree-child.module.css?ovt9rp");
+@import url("/core/assets/vendor/jquery.ui/themes/base/core.css?ovt9rp");
+@import url("/core/assets/vendor/jquery.ui/themes/base/menu.css?ovt9rp");
+@import url("/core/assets/vendor/jquery.ui/themes/base/autocomplete.css?ovt9rp");
+@import url("/core/themes/stable/css/system/system.admin.css?ovt9rp");
+@import url("/core/assets/vendor/jquery.ui/themes/base/theme.css?ovt9rp");
+</style>
+<style media="all">
+@import url("/core/themes/classy/css/components/action-links.css?ovt9rp");
+@import url("/core/themes/classy/css/components/breadcrumb.css?ovt9rp");
+@import url("/core/themes/classy/css/components/button.css?ovt9rp");
+@import url("/core/themes/classy/css/components/collapse-processed.css?ovt9rp");
+@import url("/core/themes/classy/css/components/container-inline.css?ovt9rp");
+@import url("/core/themes/classy/css/components/details.css?ovt9rp");
+@import url("/core/themes/classy/css/components/exposed-filters.css?ovt9rp");
+@import url("/core/themes/classy/css/components/field.css?ovt9rp");
+@import url("/core/themes/classy/css/components/form.css?ovt9rp");
+@import url("/core/themes/classy/css/components/icons.css?ovt9rp");
+@import url("/core/themes/classy/css/components/inline-form.css?ovt9rp");
+@import url("/core/themes/classy/css/components/item-list.css?ovt9rp");
+@import url("/core/themes/classy/css/components/link.css?ovt9rp");
+@import url("/core/themes/classy/css/components/links.css?ovt9rp");
+@import url("/core/themes/classy/css/components/menu.css?ovt9rp");
+@import url("/core/themes/classy/css/components/more-link.css?ovt9rp");
+@import url("/core/themes/classy/css/components/pager.css?ovt9rp");
+@import url("/core/themes/classy/css/components/tabledrag.css?ovt9rp");
+@import url("/core/themes/classy/css/components/tableselect.css?ovt9rp");
+@import url("/core/themes/classy/css/components/tablesort.css?ovt9rp");
+@import url("/core/themes/classy/css/components/tabs.css?ovt9rp");
+@import url("/core/themes/classy/css/components/textarea.css?ovt9rp");
+@import url("/core/themes/classy/css/components/ui-dialog.css?ovt9rp");
+@import url("/core/themes/classy/css/components/messages.css?ovt9rp");
+@import url("/core/themes/classy/css/components/progress.css?ovt9rp");
+</style>
+
+    
+<!--[if lte IE 8]>
+<script src="/core/assets/vendor/html5shiv/html5shiv.min.js?v=3.7.3"></script>
+<![endif]-->
+
+  </head>
+  <body class="user-logged-in path-admin">
+        <a href="#main-content" class="visually-hidden focusable skip-link">
+      Skip to main content
+    </a>
+    
+    <div class="layout-container">
+
+  <header role="banner">
+    
+  </header>
+
+  
+  
+
+  
+
+  
+
+  
+
+  <main role="main">
+    <a id="main-content" tabindex="-1"></a>
+    <div class="layout-content">
+        <div class="region region-content">
+        <div role="contentinfo" aria-label="Status message" class="messages messages--status">
+                  <h2 class="visually-hidden">Status message</h2>
+                    The menu link has been saved.
+            </div>
+    <form class="menu-link-content-menu-link-content-form menu-link-content-form" data-drupal-selector="menu-link-content-menu-link-content-form" action="/admin/structure/menu/item/93/edit" method="post" id="menu-link-content-menu-link-content-form" accept-charset="UTF-8">
+  <div class="field--type-string field--name-title field--widget-string-textfield js-form-wrapper form-wrapper" data-drupal-selector="edit-title-wrapper" id="edit-title-wrapper">      <div class="js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-title-0-value form-item-title-0-value">
+      <label for="edit-title-0-value" class="js-form-required form-required">Menu link title</label>
+        <input class="js-text-full text-full form-text required" data-drupal-selector="edit-title-0-value" aria-describedby="edit-title-0-value--description" type="text" id="edit-title-0-value" name="title[0][value]" value="!link_hSBY8d1kBYaxGdlk" size="60" maxlength="255" placeholder="" required="required" aria-required="true" />
+
+            <div id="edit-title-0-value--description" class="description">
+      The text to be used for this link in the menu.
+    </div>
+  </div>
+
+  </div>
+<div class="field--type-link field--name-link field--widget-link-default js-form-wrapper form-wrapper" data-drupal-selector="edit-link-wrapper" id="edit-link-wrapper">      <div class="js-form-item form-item js-form-type-entity-autocomplete form-type-entity-autocomplete js-form-item-link-0-uri form-item-link-0-uri">
+      <label for="edit-link-0-uri" class="js-form-required form-required">Link</label>
+        <input data-autocomplete-first-character-blacklist="/#?" data-drupal-selector="edit-link-0-uri" aria-describedby="edit-link-0-uri--description" class="form-autocomplete form-text required" data-autocomplete-path="/entity_reference_autocomplete/node/default/KxyFRMhggKfR-XDeXrJekBLAckSFv9gN6wMs6nOxN3Y" type="text" id="edit-link-0-uri" name="link[0][uri]" value="/node/1" size="60" maxlength="2048" placeholder="" required="required" aria-required="true" />
+
+            <div id="edit-link-0-uri--description" class="description">
+      Start typing the title of a piece of content to select it. You can also enter an internal path such as <em class="placeholder">/node/add</em> or an external URL such as <em class="placeholder">http://example.com</em>. Enter <em class="placeholder">&lt;front&gt;</em> to link to the front page.
+    </div>
+  </div>
+
+  </div>
+<div class="field--type-boolean field--name-enabled field--widget-boolean-checkbox js-form-wrapper form-wrapper" data-drupal-selector="edit-enabled-wrapper" id="edit-enabled-wrapper"><div class="js-form-item form-item js-form-type-checkbox form-type-checkbox js-form-item-enabled-value form-item-enabled-value">
+        <input data-drupal-selector="edit-enabled-value" aria-describedby="edit-enabled-value--description" type="checkbox" id="edit-enabled-value" name="enabled[value]" value="1" checked="checked" class="form-checkbox" />
+
+        <label for="edit-enabled-value" class="option">Enabled</label>
+          <div id="edit-enabled-value--description" class="description">
+      A flag for whether the link should be enabled in menus or hidden.
+    </div>
+  </div>
+</div>
+<div class="field--type-string field--name-description field--widget-string-textfield js-form-wrapper form-wrapper" data-drupal-selector="edit-description-wrapper" id="edit-description-wrapper">      <div class="js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-description-0-value form-item-description-0-value">
+      <label for="edit-description-0-value">Description</label>
+        <input class="js-text-full text-full form-text" data-drupal-selector="edit-description-0-value" aria-describedby="edit-description-0-value--description" type="text" id="edit-description-0-value" name="description[0][value]" value="" size="60" maxlength="255" placeholder="" />
+
+            <div id="edit-description-0-value--description" class="description">
+      Shown when hovering over the menu link.
+    </div>
+  </div>
+
+  </div>
+<div class="field--type-boolean field--name-expanded field--widget-boolean-checkbox js-form-wrapper form-wrapper" data-drupal-selector="edit-expanded-wrapper" id="edit-expanded-wrapper"><div class="js-form-item form-item js-form-type-checkbox form-type-checkbox js-form-item-expanded-value form-item-expanded-value">
+        <input data-drupal-selector="edit-expanded-value" aria-describedby="edit-expanded-value--description" type="checkbox" id="edit-expanded-value" name="expanded[value]" value="1" checked="checked" class="form-checkbox" />
+
+        <label for="edit-expanded-value" class="option">Show as expanded</label>
+          <div id="edit-expanded-value--description" class="description">
+      If selected and this menu link has children, the menu will always appear expanded.
+    </div>
+  </div>
+</div>
+<input autocomplete="off" data-drupal-selector="form-gjscw0dcyvgriugmguyz3uaf6-vkvo-g38vc6gsjhg4" type="hidden" name="form_build_id" value="form-GJsCW0dcyvgrIUgMgUyz3uAF6-vKVo-G38VC6gsJhg4" />
+<input data-drupal-selector="edit-menu-link-content-menu-link-content-form-form-token" type="hidden" name="form_token" value="r_bX3OMJs-lHjRHeu4Zb_4O_wSn_QZO4fIjVFCJ9ixo" />
+<input data-drupal-selector="edit-menu-link-content-menu-link-content-form" type="hidden" name="form_id" value="menu_link_content_menu_link_content_form" />
+<div class="field--type-language field--name-langcode field--widget-language-select js-form-wrapper form-wrapper" data-drupal-selector="edit-langcode-wrapper" id="edit-langcode-wrapper">      
+  </div>
+<div class="js-form-item form-item js-form-type-select form-type-select js-form-item-menu-parent form-item-menu-parent">
+      <label for="edit-menu-parent">Parent link</label>
+        <select class="menu-title-select form-select" data-drupal-selector="edit-menu-parent" aria-describedby="edit-menu-parent--description" id="edit-menu-parent" name="menu_parent"><option value="a7b4852bf30067d2d120d3870f2:" selected="selected">&lt;mrQ0pQtMS9u4Cvow&gt;</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:d84e057b-5b08-498e-820b-52b4842a31c7">-- !link_cALYUO7Fzbw7aWVc</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:3f1d48c1-ff15-4ae4-85ee-9ee32d5f5b9c">-- !link_bSoUgEd1P253Qn0I</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:68c8aa1d-ae39-4670-8ded-c1c7823e51f2">-- !link_in0qWFen1azEiauU</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:51f1a213-da35-4930-abb9-02e7239b68b1">-- !link_kyf7CbkYWfj7bQAu</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:38df12f9-9a60-479f-b497-d66b922f6fa2">-- !link_cmkdAnX35qNhrPhY</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:095db807-2253-4891-a10a-c02a919b9ad6">-- !link_cYYRzUJqQ1dGe9eL</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:41ccb9c9-3604-494e-ad1d-363b5b7ebea5">-- !link_yiiaWxQpJ0T0DqZ1</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:e9390f12-b8ba-4af7-b64b-68646579e70f">-- !link_gFJu6gQ71W1DBBRZ</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:289095b8-fd8a-4153-9a7e-cd738785d0ee">-- !link_adJRyEphMn3yPe0c</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:0d774fdf-e0ed-4e58-92d1-570b13941ad6">-- !link_yJF0sKToX39rtd3N</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:9e226e5b-d798-4a50-8ad2-c8fbf568d1a3">-- !link_rIvRshSQVZDZQQYs</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:a4b785ea-186b-4568-9b76-6482cd82864f">-- !link_fjN3mBWB7UBaE5jG</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:66804585-c765-4c44-b575-14847a8fe848">-- !link_jgmb38kVwhBoB49B</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:8cb65726-89cd-4c22-b5cf-36a61bfe02fd">-- !link_chY0c7MPNNjwxy3c</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:bced2dfb-2996-481a-88e2-00747b9219ca">-- !link_pcGJV9mG4G02yag8</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:21a8dc05-2804-48b7-a3fd-2c78774c78f0">-- !link_eXaEv0s7kgp02FsH</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:66996460-4482-4db7-b033-ff2798397784">-- !link_zaVc8aIsgaRZV275</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:a6f06464-10ca-45db-bc3b-0013d580585c">-- !link_ydokbUdd8NTu44GX</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:b34fb9ee-bda9-4aca-a6b3-06c88ae00dfb">-- !link_bp7eqYsmr672MFvL</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:4691226c-a70d-405b-a954-c3fc0447b455">-- !link_hZfYd0pH894NQFc2</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:b37a3948-c768-40bc-8c74-690c44c62b0d">-- !link_mPf6cPTZIOnWKbXg</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:6fc53cca-7521-4220-82dc-502654f38f48">-- !link_b2t3kzS66SMebc3Z</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:9b00e8f3-de10-456d-839b-cbd5cbade13e">-- !link_llYapw5fVD22Dyhr</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:b754604d-6f80-46e9-bbb8-6267b9fd0363">-- !link_jv8uz2J0sDXO2Spo</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:e03f87ce-3dc0-4f37-88fd-515bd632d52d">-- !link_eQYVmpWi99fnJGWF</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:eb67f5cf-6b75-4c0e-9874-a40633d85784">-- !link_are8V5xba8YKviC9</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:02943020-6008-4dd3-82ea-b80a234e54bd">-- !link_h8EacBis0O6uzY79</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:58551b10-8550-48e2-a6f4-afc57248402e">-- !link_z1F9zwfFEvQFd5Ez</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:403b1981-9f23-4235-b2f0-34ede617fd8b">-- !link_wRsrmiqbZUyQWFSU</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:63a49e43-601f-4e8c-93fc-66e6c20a7971">-- !link_bpetpRcDRJyp1fhB</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:a2b659b1-62e7-4f7d-bcce-09899070d098">-- !link_zV1m9hDwJ4zyj967</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:e2e8fc54-ac6a-4bb3-abc5-f5e68572c7a8">-- !link_uEWW08HEgBAZK8s3</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:370e6344-af3d-4003-80db-3d1112ed677f">-- !link_dR69jGV22clHN2fp</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:fd6fb13e-eb91-409c-a3aa-12814b113e30">-- !link_vAWOKErvghIUb0tA</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:c066b912-4537-4ec8-becc-f2285dc1d2ff">-- !link_pl3nzSEISihCMuS9</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:b3264f39-fbe2-4582-84c1-d8ca01bafd29">-- !link_o3gKOWMquLj0yL7j</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:c0d54c3f-8d29-4fdf-b046-e9afb3cebf15">-- !link_pWLqBvFCEzQL61Mj</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:56074d1b-eec8-485a-9509-164001c0e167">-- !link_w16fcZQoljoiEsaL</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:c575694b-1383-46fc-b101-de0575baad45">-- !link_pqz3DEz58YBhcwuV</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:f555fe6c-16c1-4707-af15-74d051e9235b">-- !link_eoZxFyHFBF4rtqi1</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:619c9659-be1e-468b-8681-8f015a573538">-- !link_nti9yjTbF7V4WdMD</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:b7d7b296-fad2-43ab-a911-3077a031b0b1">-- !link_g8cRxqvTxYYSkJG9</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:1dfbac24-fb78-411a-aa89-382636b0b5e1">-- !link_am4UeTWwc20kG4dj</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:18869227-9205-4bc6-acab-189ba3b98147">-- !link_gtbuqDlfj800uter</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:9cdfe133-b9ea-450e-bf7c-36d91832b062">-- !link_fMmxI31R3iLl8aFj</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:bb33c40f-468a-4b26-a40e-16d7402b89c9">-- !link_ro8RUa6a11zaYy94</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:ccb8bbaf-83a8-4e6e-8423-4f20efd6993b">-- !link_hVdPsu9hHXlLHGjS</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:71efde0c-4826-4166-9f64-217d8089f71a">-- !link_oAxZLSihFcolrrnk</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:0112c460-e1a8-44a3-a596-9899ff0729f0">-- !link_uq83oO2mwzmOvzDA</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:5d1f8aef-71db-495b-9e82-3b2e2b05f0d8">-- !link_iGeCi7uUyUfboDam</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:3efec971-f662-4ced-98c7-8c30d5896691">-- !link_ovWpnWj4VWAsPmeX</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:6657a4cc-a1a9-484e-ab80-cef7ed7f03be">---- !link_e9jsUnhXjR06C0BU</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:ee6447e8-6827-4be1-b56c-fb961e887893">---- !link_t629NxaR26Qz67ys</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:7dbc856c-bbe6-48ae-849d-d18f4a9b63f9">------ nDeqiTSeyKLisKZk</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:3a9635f2-6e7d-4ad7-89d2-24acbf7ab5fa">-------- !link_w7VzkX6hkOQ2Ow1m</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:5e5a0214-4834-4812-9019-136dbae8bc60">-- !link_q3eOWCItanBd01pG</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:2f7728e7-ded9-48f3-96c0-bc4fe94c6cb6">-- pOGkfyxxOCEStQj6</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:dedc7f93-b0b9-437c-8d19-ba03a9d9f19c">-- !link_fzeeOS4eKOKoAcr3</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:f982ae34-d7b3-4ff4-ba5d-835efe33510c">-- !link_ze2VX7vuJI9naieL</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:f9c7a7c4-f86a-4c63-8f8b-7efeeaab499f">-- !link_g4IGv16Pl6nZMHBU</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:9cf763d0-93ec-4402-aea4-087243730f6b">-- !link_hIJNsWHv6WIQwcee</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:7b589da6-e2cd-444f-9a1a-d2396ed89880">-- !link_h9YppJ2DbbbnUcOL</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:9f7c3f17-9eba-4e81-89fa-a7ee66e971b3">-- !link_iGKbqHbrxoDlHB2t</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:4dfa3b2a-428e-486d-850a-15e2ae23c1bd">-- !link_vIM6x8De5YEf8nL9</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:cfb114c6-8ccf-4536-902a-cf7f3688c0ef">-- !link_iXmIWBzOkn31dv1X</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:2482fd24-77d7-458a-a6d0-8c7df951d31f">-- !link_q2tpfQoh6gZYtmZ5</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:73aae06d-5621-435b-91db-f89a34b44cda">-- !link_l0HUGoNnppCMGBYz</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:1038ea89-49b2-446f-866d-ca0ab468da2d">-- !link_zWVkUJViQ37ht2Xi</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:ebbc9c92-9bae-4410-94c8-5793ea8e59bd">-- !link_nQmpRRic6Rzlvus3</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:adb335dd-2294-4a44-92ca-270af2394555">-- !link_wK2s4RihTLPyH7IV</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:cf478494-9722-4d70-80c4-85218befeb4f">-- !link_jefC7JC9JQnIoEE1</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:e0477e62-3ec5-4ee1-9a39-2b3e632639a1">-- !link_nK08TlBF2QchzTIU</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:15c2d190-4144-4702-95a5-e27d9f4d0a27">-- !link_tQpMMdOSFyaMesUI</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:73d51921-ded0-4f55-a5fc-0c2efdde90f6">-- !link_cz3HlZDC3T81fRUX</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:9b838e5e-37f0-40d4-9ef6-a85c86546351">-- !link_qdFe5gsjBECCTGjL</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:1a51f613-cfbf-4f44-abc3-8820617ab3b3">-- !link_gWnR4LdtJ4uw211b</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:522f8d62-7eb9-4862-98db-10da883d3127">-- !link_tonExBgnYFidllhm</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:6650c74c-8d2e-4c05-8bc8-38f8f30d7017">-- !link_aLXkdNSrSkbyhT9n</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:6008bc32-322b-41ca-a125-fa57db2d68c1">-- !link_ohhJtW65O9vaWU4E</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:f8e2d96f-0035-432c-b167-d8daaaf870ca">-- !link_tGgSKA9WAaO4L3t0</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:899589e0-ec89-4272-8b3b-15216017603e">-- !link_oL0cA4MnzbNSJTzX</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:58661357-bd82-4b89-abe1-b91d87c14e03">-- !link_pbx1u5aD1jRofPNv</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:4b1e5977-163c-47bd-b303-e05c7ac6cfde">-- !link_xhL0BZMjbDiWuLD5</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:7a97d7e4-e2a6-4bac-8968-6200dac47c1e">-- !link_aPZFtqlowRKiG5fo</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:85a36c0f-1959-4b89-ab78-d1d94144397a">-- !link_ptdbKzLUBlUe41S1</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:788367c6-6d07-42a2-bbd2-6a9429a44581">-- !link_eiJPbm15vZuccCe5</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:9ae930b7-3e2e-4eac-b5f3-5d3133bda9e9">-- !link_smxqfg7qjY5wqT02</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:7613deda-558c-456b-979c-abce716d6531">-- !link_piRmL6b04ZdtvfT7</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:ae5f0f86-9cf7-4276-9bbf-3fecedeead46">-- !link_tLi5PX3SEY3NFlag</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:8261278f-6612-45ed-8442-069190477222">-- !link_vk8l6f6Q9ar3KZh6</option><option value="a7b4852bf30067d2d120d3870f2:menu_link_content:128f8706-6356-422a-9ed1-c45c2917cd54">-- !link_d3gC9whEg3NY4z70</option><option value="account:">&lt;User account menu&gt;</option><option value="account:user.page">-- My account</option><option value="account:user.logout">-- Log out</option><option value="admin:">&lt;Administration&gt;</option><option value="admin:system.admin">-- Administration</option><option value="admin:system.admin_structure">---- Structure</option><option value="admin:block.admin_display">------ Block layout</option><option value="admin:entity.menu.collection">------ Menus</option><option value="admin:system.admin_config">---- Configuration</option><option value="admin:user.admin_index">------ People</option><option value="admin:system.admin_config_system">------ System</option><option value="admin:system.admin_config_content">------ Content authoring</option><option value="admin:system.admin_config_ui">------ User interface</option><option value="admin:system.admin_config_development">------ Development</option><option value="admin:system.admin_config_media">------ Media</option><option value="admin:system.admin_config_search">------ Search and metadata</option><option value="admin:system.admin_config_regional">------ Regional and language</option><option value="admin:system.admin_config_services">------ Web services</option><option value="admin:system.admin_config_workflow">------ Workflow</option><option value="admin:help.main">---- Help</option><option value="footer:">&lt;Footer&gt;</option><option value="main:">&lt;Main navigation&gt;</option><option value="main:test_page_test.front_page">-- Home</option><option value="tools:">&lt;Tools&gt;</option><option value="tools:node.add_page">-- Add content</option><option value="tools:filter.tips_all">-- Compose tips (disabled)</option><option value="tools:test_page_test.test_page">-- Test front page link</option></select>
+            <div id="edit-menu-parent--description" class="description">
+      The maximum depth for a link and all its children is fixed. Some menu links may not be available as parents if selecting them would exceed this limit.
+    </div>
+  </div>
+<div class="field--type-integer field--name-weight field--widget-number js-form-wrapper form-wrapper" data-drupal-selector="edit-weight-wrapper" id="edit-weight-wrapper">      <div class="js-form-item form-item js-form-type-number form-type-number js-form-item-weight-0-value form-item-weight-0-value">
+      <label for="edit-weight-0-value">Weight</label>
+        <input data-drupal-selector="edit-weight-0-value" aria-describedby="edit-weight-0-value--description" type="number" id="edit-weight-0-value" name="weight[0][value]" value="35" step="1" placeholder="" class="form-number" />
+
+            <div id="edit-weight-0-value--description" class="description">
+      Link weight among links in the same menu at the same depth. In the menu, the links with high weight will sink and links with a low weight will be positioned nearer the top.
+    </div>
+  </div>
+
+  </div>
+<div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper" id="edit-actions"><input data-drupal-selector="edit-submit" type="submit" id="edit-submit" name="op" value="Save" class="button button--primary js-form-submit form-submit" />
+<a href="/admin/structure/menu/item/93/delete" class="button button--danger" data-drupal-selector="edit-delete" id="edit-delete" hreflang="en">Delete</a></div>
+
+</form>
+
+  </div>
+
+    </div>
+          <aside class="layout-sidebar-first" role="complementary">
+          <div class="region region-sidebar-first">
+    <div id="block-plrfgiy5" class="block block-core block-page-title-block">
+  
+    
+      
+  <h1 class="page-title">Edit menu link</h1>
+
+
+  </div>
+<nav role="navigation" aria-labelledby="block-qsfaxrn8-menu" id="block-qsfaxrn8" class="block block-menu navigation menu--a7b4852bf30067d2d120d3870f2">
+      
+  <h2 id="block-qsfaxrn8-menu">twEELuuU</h2>
+  
+
+        
+              <ul class="menu">
+                    <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_cALYUO7Fzbw7aWVc</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_bSoUgEd1P253Qn0I</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_in0qWFen1azEiauU</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_kyf7CbkYWfj7bQAu</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_cmkdAnX35qNhrPhY</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_cYYRzUJqQ1dGe9eL</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_yiiaWxQpJ0T0DqZ1</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_gFJu6gQ71W1DBBRZ</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_adJRyEphMn3yPe0c</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_yJF0sKToX39rtd3N</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_rIvRshSQVZDZQQYs</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_fjN3mBWB7UBaE5jG</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_jgmb38kVwhBoB49B</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_chY0c7MPNNjwxy3c</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_pcGJV9mG4G02yag8</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_eXaEv0s7kgp02FsH</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_zaVc8aIsgaRZV275</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_ydokbUdd8NTu44GX</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_bp7eqYsmr672MFvL</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_hZfYd0pH894NQFc2</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_mPf6cPTZIOnWKbXg</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_b2t3kzS66SMebc3Z</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_llYapw5fVD22Dyhr</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_jv8uz2J0sDXO2Spo</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_eQYVmpWi99fnJGWF</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_are8V5xba8YKviC9</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_h8EacBis0O6uzY79</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_z1F9zwfFEvQFd5Ez</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_wRsrmiqbZUyQWFSU</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_bpetpRcDRJyp1fhB</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_zV1m9hDwJ4zyj967</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_uEWW08HEgBAZK8s3</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_dR69jGV22clHN2fp</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_vAWOKErvghIUb0tA</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_pl3nzSEISihCMuS9</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_o3gKOWMquLj0yL7j</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_pWLqBvFCEzQL61Mj</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_w16fcZQoljoiEsaL</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_pqz3DEz58YBhcwuV</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_eoZxFyHFBF4rtqi1</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_nti9yjTbF7V4WdMD</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_g8cRxqvTxYYSkJG9</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_am4UeTWwc20kG4dj</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_gtbuqDlfj800uter</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_fMmxI31R3iLl8aFj</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_ro8RUa6a11zaYy94</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_hVdPsu9hHXlLHGjS</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_oAxZLSihFcolrrnk</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_uq83oO2mwzmOvzDA</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_iGeCi7uUyUfboDam</a>
+              </li>
+                <li class="menu-item menu-item--collapsed">
+        <a href="/node/4" data-drupal-link-system-path="node/4">!link_ovWpnWj4VWAsPmeX</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_q3eOWCItanBd01pG</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">pOGkfyxxOCEStQj6</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_fzeeOS4eKOKoAcr3</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_ze2VX7vuJI9naieL</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_g4IGv16Pl6nZMHBU</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_hIJNsWHv6WIQwcee</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_h9YppJ2DbbbnUcOL</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_iGKbqHbrxoDlHB2t</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_vIM6x8De5YEf8nL9</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_iXmIWBzOkn31dv1X</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_q2tpfQoh6gZYtmZ5</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_l0HUGoNnppCMGBYz</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_zWVkUJViQ37ht2Xi</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_nQmpRRic6Rzlvus3</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_wK2s4RihTLPyH7IV</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_jefC7JC9JQnIoEE1</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_nK08TlBF2QchzTIU</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_tQpMMdOSFyaMesUI</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_cz3HlZDC3T81fRUX</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_qdFe5gsjBECCTGjL</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_gWnR4LdtJ4uw211b</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_tonExBgnYFidllhm</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_aLXkdNSrSkbyhT9n</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_ohhJtW65O9vaWU4E</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_tGgSKA9WAaO4L3t0</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_oL0cA4MnzbNSJTzX</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_pbx1u5aD1jRofPNv</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_xhL0BZMjbDiWuLD5</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_aPZFtqlowRKiG5fo</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_ptdbKzLUBlUe41S1</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_eiJPbm15vZuccCe5</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_smxqfg7qjY5wqT02</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_piRmL6b04ZdtvfT7</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_tLi5PX3SEY3NFlag</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_vk8l6f6Q9ar3KZh6</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_d3gC9whEg3NY4z70</a>
+              </li>
+                <li class="menu-item">
+        <a href="/node/1" data-drupal-link-system-path="node/1">!link_hSBY8d1kBYaxGdlk</a>
+              </li>
+        </ul>
+  
+
+
+  </nav>
+
+  </div>
+
+      </aside>
+    
+    
+  </main>
+
+  
+</div>
+    
+    <script type="application/json" data-drupal-selector="drupal-settings-json">{"path":{"baseUrl":"\/","scriptPath":null,"pathPrefix":"","currentPath":"admin\/structure\/menu\/item\/93\/edit","currentPathIsAdmin":true,"isFront":false,"currentLanguage":"en","currentQuery":{"q":"\/admin\/structure\/menu\/item\/93\/edit"}},"pluralDelimiter":"\u0003","ajaxPageState":{"libraries":"classy\/base,classy\/messages,core\/drupal.active-link,core\/drupal.autocomplete,core\/html5shiv,core\/normalize,system\/admin","theme":"classy","theme_token":null},"ajaxTrustedUrl":{"form_action_p_pvdeGsVG5zNF_XLGPTvYSKCf43t8qZYSwcfZl2uzM":true},"user":{"uid":"2","permissionsHash":"0eecea53fc686f9cd2e96e1d02440b8c0ea8ec365a948c415ea2230553184d96"}}</script>
+<script src="/core/assets/vendor/domready/ready.min.js?v=1.0.8"></script>
+
+<!--[if lte IE 9]>
+<script src="/core/assets/vendor/classList/classList.min.js?v=2014-12-13"></script>
+<![endif]-->
+<script src="/core/assets/vendor/jquery/jquery.min.js?v=3.2.1"></script>
+<script src="/core/assets/vendor/jquery-once/jquery.once.min.js?v=2.2.0"></script>
+<script src="/core/misc/drupalSettingsLoader.js?v=8.5.0-dev"></script>
+<script src="/core/misc/drupal.js?v=8.5.0-dev"></script>
+<script src="/core/misc/drupal.init.js?v=8.5.0-dev"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/data-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/disable-selection-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/form-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/labels-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/jquery-1-7-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/scroll-parent-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/tabbable-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/unique-id-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/version-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/focusable-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/ie-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/keycode-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/plugin-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/safe-active-element-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/safe-blur-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/widget-min.js?v=1.12.1"></script>
+<script src="/core/misc/autocomplete.js?v=8.5.0-dev"></script>
+<script src="/core/misc/active-link.js?v=8.5.0-dev"></script>
+<script src="/core/misc/progress.js?v=8.5.0-dev"></script>
+<script src="/core/misc/ajax.js?v=8.5.0-dev"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/position-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/widgets/menu-min.js?v=1.12.1"></script>
+<script src="/core/assets/vendor/jquery.ui/ui/widgets/autocomplete-min.js?v=1.12.1"></script>
+
+  </body>
+</html>
