@@ -75,12 +75,17 @@ class NodeLanguageTest extends NodeTestBase {
       ],
       'fr' => [
         'Premier nœud fr',
-      ]
+      ],
     ];
 
     // Create nodes with translations.
     foreach ($this->nodeTitles['es'] as $index => $title) {
-      $node = $this->drupalCreateNode(['title' => $title, 'langcode' => 'es', 'type' => 'page', 'promote' => 1]);
+      $node = $this->drupalCreateNode([
+        'title' => $title,
+        'langcode' => 'es',
+        'type' => 'page',
+        'promote' => 1,
+      ]);
       foreach (['en', 'fr'] as $langcode) {
         if (isset($this->nodeTitles[$langcode][$index])) {
           $translation = $node->addTranslation($langcode, ['title' => $this->nodeTitles[$langcode][$index]]);
@@ -91,7 +96,12 @@ class NodeLanguageTest extends NodeTestBase {
     }
     // Create non-translatable nodes.
     foreach ($this->nodeTitles[LanguageInterface::LANGCODE_NOT_SPECIFIED] as $index => $title) {
-      $node = $this->drupalCreateNode(['title' => $title, 'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED, 'type' => 'page', 'promote' => 1]);
+      $node = $this->drupalCreateNode([
+        'title' => $title,
+        'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+        'type' => 'page',
+        'promote' => 1,
+      ]);
       $node->body->value = $this->randomMachineName(32);
       $node->save();
     }
@@ -290,6 +300,39 @@ class NodeLanguageTest extends NodeTestBase {
       $this->assertText('French', 'French language shown in English.');
       $this->assertText('Spanish', 'Spanish language shown in English.');
     }
+  }
+
+  /**
+   * Tests native name display in language field.
+   *
+   * Drupal issue: https://www.drupal.org/project/drupal/issues/2952252.
+   */
+  public function testContextualFilterOverrideTitle() {
+    $view = Views::getView('test_language');
+    $view->setDisplay('page_1');
+
+    $options = [
+      'title_enable' => TRUE,
+      'title' => 'title {{ arguments.nid }}',
+    ];
+
+    $view->initHandlers();
+    $view->removeHandler('page_1', 'argument', 'langcode');
+    $id = $view->addHandler('page_1', 'argument', 'node_field_data', 'nid', $options);
+    $view->storage->setStatus(TRUE);
+    $view->build();
+    $view->save();
+
+    // Make sure view behaves as expected.
+    $this->drupalGet('fr/test-language/1');
+    $page = $this->getSession()->getPage();
+    $title = $page->find('css', '.page-title');
+    $this->assertEquals($title->getText(), 'title ' . $this->nodeTitles['fr'][0]);
+
+    $this->drupalGet('es/test-language/1');
+    $page = $this->getSession()->getPage();
+    $title = $page->find('css', '.page-title');
+    $this->assertEquals($title->getText(), 'title ' . $this->nodeTitles['es'][0]);
   }
 
 }
