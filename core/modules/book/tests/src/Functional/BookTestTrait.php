@@ -51,11 +51,16 @@ trait BookTestTrait {
      *  |- Node 4
      */
     $nodes = [];
-    $nodes[] = $this->createBookNode($book->id(), NULL, $edit); // Node 0.
-    $nodes[] = $this->createBookNode($book->id(), $nodes[0]->book['nid'], $edit); // Node 1.
-    $nodes[] = $this->createBookNode($book->id(), $nodes[0]->book['nid'], $edit); // Node 2.
-    $nodes[] = $this->createBookNode($book->id(), NULL, $edit); // Node 3.
-    $nodes[] = $this->createBookNode($book->id(), NULL, $edit); // Node 4.
+    // Node 0.
+    $nodes[] = $this->createBookNode($book->id(), NULL, $edit);
+    // Node 1.
+    $nodes[] = $this->createBookNode($book->id(), $nodes[0]->book['nid'], $edit);
+    // Node 2.
+    $nodes[] = $this->createBookNode($book->id(), $nodes[0]->book['nid'], $edit);
+    // Node 3.
+    $nodes[] = $this->createBookNode($book->id(), NULL, $edit);
+    // Node 4.
+    $nodes[] = $this->createBookNode($book->id(), NULL, $edit);
 
     $this->drupalLogout();
 
@@ -72,15 +77,15 @@ trait BookTestTrait {
    * @param $nodes
    *   Nodes that should be in outline.
    * @param $previous
-   *   (optional) Previous link node. Defaults to FALSE.
+   *   Previous link node.
    * @param $up
-   *   (optional) Up link node. Defaults to FALSE.
+   *   Up link node.
    * @param $next
-   *   (optional) Next link node. Defaults to FALSE.
+   *   Next link node.
    * @param array $breadcrumb
    *   The nodes that should be displayed in the breadcrumb.
    */
-  public function checkBookNode(EntityInterface $node, $nodes, $previous = FALSE, $up = FALSE, $next = FALSE, array $breadcrumb) {
+  public function checkBookNode(EntityInterface $node, $nodes, $previous, $up, $next, array $breadcrumb) {
     // $number does not use drupal_static as it should not be reset
     // since it uniquely identifies each call to checkBookNode().
     static $number = 0;
@@ -179,7 +184,8 @@ trait BookTestTrait {
   public function createBookNode($book_nid, $parent = NULL, $edit = []) {
     // $number does not use drupal_static as it should not be reset
     // since it uniquely identifies each call to createBookNode().
-    static $number = 0; // Used to ensure that when sorted nodes stay in same order.
+    // Used to ensure that when sorted nodes stay in same order.
+    static $number = 0;
 
     $edit['title[0][value]'] = str_pad($number, 2, '0', STR_PAD_LEFT) . ' - SimpleTest test node ' . $this->randomMachineName(10);
     $edit['body[0][value]'] = 'SimpleTest test body ' . $this->randomMachineName(32) . ' ' . $this->randomMachineName(32);

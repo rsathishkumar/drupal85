@@ -345,7 +345,7 @@ function simpletest_phpunit_run_command(array $unescaped_test_classnames, $phpun
   }
   else {
     // Double escape namespaces so they'll work in a regexp.
-    $escaped_test_classnames = array_map(function($class) {
+    $escaped_test_classnames = array_map(function ($class) {
       return addslashes($class);
     }, $unescaped_test_classnames);
 
@@ -363,7 +363,7 @@ function simpletest_phpunit_run_command(array $unescaped_test_classnames, $phpun
 
   // exec in a subshell so that the environment is isolated when running tests
   // via the simpletest UI.
-  $ret = exec(join($command, " "), $output, $status);
+  $ret = exec(implode(" ", $command), $output, $status);
 
   chdir($old_cwd);
   putenv('SIMPLETEST_DB=');
@@ -772,9 +772,10 @@ function simpletest_mail_alter(&$message) {
  * @param $phpunit_xml_file
  *   Path to the PHPUnit XML file.
  *
- * @return array[]
+ * @return array[]|null
  *   The results as array of rows in a format that can be inserted into
- *   {simpletest}.
+ *   {simpletest}. If the phpunit_xml_file does not have any contents then the
+ *   function will return NULL.
  */
 function simpletest_phpunit_xml_to_rows($test_id, $phpunit_xml_file) {
   $contents = @file_get_contents($phpunit_xml_file);
@@ -794,7 +795,7 @@ function simpletest_phpunit_xml_to_rows($test_id, $phpunit_xml_file) {
  *
  * @param \SimpleXMLElement $element
  *   The PHPUnit xml to search for test cases.
- * @param \SimpleXMLElement $suite
+ * @param \SimpleXMLElement $parent
  *   (Optional) The parent of the current element. Defaults to NULL.
  *
  * @return array

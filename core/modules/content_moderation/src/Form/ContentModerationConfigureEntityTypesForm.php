@@ -17,6 +17,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * The form for editing entity types associated with a workflow.
+ *
+ * @internal
  */
 class ContentModerationConfigureEntityTypesForm extends FormBase {
 
@@ -69,7 +71,7 @@ class ContentModerationConfigureEntityTypesForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $bundle_info , ModerationInformationInterface $moderation_information) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityTypeBundleInfoInterface $bundle_info, ModerationInformationInterface $moderation_information) {
     $this->entityTypeManager = $entity_type_manager;
     $this->bundleInfo = $bundle_info;
     $this->moderationInformation = $moderation_information;
@@ -178,9 +180,15 @@ class ContentModerationConfigureEntityTypesForm extends FormBase {
         $selected_bundles[$bundle_id] = $bundle['label'];
       }
     }
+    $selected_bundles_list = [
+      '#theme' => 'item_list',
+      '#items' => $selected_bundles,
+      '#context' => ['list_style' => 'comma-list'],
+      '#empty' => $this->t('none'),
+    ];
     $response = new AjaxResponse();
     $response->addCommand(new CloseDialogCommand());
-    $response->addCommand(new HtmlCommand('#selected-' . $this->entityType->id(), !empty($selected_bundles) ? implode(', ', $selected_bundles) : $this->t('none')));
+    $response->addCommand(new HtmlCommand('#selected-' . $this->entityType->id(), $selected_bundles_list));
     return $response;
   }
 
@@ -190,9 +198,9 @@ class ContentModerationConfigureEntityTypesForm extends FormBase {
   public function getTitle(WorkflowInterface $workflow = NULL, $entity_type_id) {
     $this->entityType = $this->entityTypeManager->getDefinition($entity_type_id);
 
-    $title = $this->t('Select the @entity_type types for the @workflow', ['@entity_type' => $this->entityType->getLabel(), '@workflow' => $workflow->label()]);
+    $title = $this->t('Select the @entity_type types for the @workflow workflow', ['@entity_type' => $this->entityType->getLabel(), '@workflow' => $workflow->label()]);
     if ($bundle_entity_type_id = $this->entityType->getBundleEntityType()) {
-      $title = $this->t('Select the @entity_type_plural_label for the @workflow', ['@entity_type_plural_label' => $this->entityTypeManager->getDefinition($bundle_entity_type_id)->getPluralLabel(), '@workflow' => $workflow->label()]);
+      $title = $this->t('Select the @entity_type_plural_label for the @workflow workflow', ['@entity_type_plural_label' => $this->entityTypeManager->getDefinition($bundle_entity_type_id)->getPluralLabel(), '@workflow' => $workflow->label()]);
     }
 
     return $title;

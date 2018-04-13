@@ -12,6 +12,8 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Provides a form for the "field storage" edit page.
+ *
+ * @internal
  */
 class FieldStorageConfigEditForm extends EntityForm {
 
@@ -107,11 +109,13 @@ class FieldStorageConfigEditForm extends EntityForm {
       '#parents' => [],
       '#type' => 'fieldset',
       '#title' => $this->t('Allowed number of values'),
-      '#attributes' => ['class' => [
-        'container-inline',
-        'fieldgroup',
-        'form-composite',
-      ]],
+      '#attributes' => [
+        'class' => [
+          'container-inline',
+          'fieldgroup',
+          'form-composite',
+        ],
+      ],
     ];
 
     if ($enforced_cardinality = $this->getEnforcedCardinality()) {

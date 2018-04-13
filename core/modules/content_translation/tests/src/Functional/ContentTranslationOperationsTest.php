@@ -154,26 +154,4 @@ class ContentTranslationOperationsTest extends NodeTestBase {
     $access_control_handler->resetCache();
   }
 
-  /**
-   * Tests the Breadcrumb link and text in translation add page.
-   * see https://www.drupal.org/project/drupal/issues/2947891
-   *
-   */
-  public function testContentTranslationBreadcrumbTexts() {
-    $user = $this->createUser([], NULL, TRUE);
-    $this->drupalLogin($user);
-
-    $node = $this->drupalCreateNode(['status' => TRUE, 'type' => 'article', 'langcode' => 'en']);
-
-    // Test breadcrumb on content edit page for new language
-    $this->drupalPlaceBlock('system_breadcrumb_block');
-    $this->drupalGet('es/node/' . $node->id() . '/translations/add/en/es');
-    $page = $this->getSession()->getPage();
-    $breadcrumbs = $page->find('css', '.block-system-breadcrumb-block');
-    $this->assertEquals(1, substr_count($breadcrumbs->getText(), 'Home'));
-    $this->assertEquals(1, substr_count($breadcrumbs->getText(), 'Translations'));
-    $this->assertEquals(0, substr_count($breadcrumbs->getText(), 'Add'));
-    $this->assertNoLinkByHref('es/node/' . $node->id() . '/translations/add');
-  }
-
 }

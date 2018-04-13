@@ -11,6 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure update settings for this site.
+ *
+ * @internal
  */
 class UpdateManagerUpdate extends FormBase {
 
@@ -181,10 +183,12 @@ class UpdateManagerUpdate extends FormBase {
       }
 
       // Use the project title for the tableselect checkboxes.
-      $entry['title'] = ['data' => [
-        '#title' => $entry['title'],
-        '#markup' => $entry['title'],
-      ]];
+      $entry['title'] = [
+        'data' => [
+          '#title' => $entry['title'],
+          '#markup' => $entry['title'],
+        ],
+      ];
       $entry['#attributes'] = ['class' => ['update-' . $type]];
 
       // Drupal core needs to be upgraded manually.

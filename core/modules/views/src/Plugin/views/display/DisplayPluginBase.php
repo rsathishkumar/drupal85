@@ -164,7 +164,6 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
       }
     }
 
-
     $this->setOptionDefaults($this->options, $this->defineOptions());
     $this->display = &$display;
 
@@ -234,7 +233,9 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
   /**
    * {@inheritdoc}
    */
-  public function isDefaultDisplay() { return FALSE; }
+  public function isDefaultDisplay() {
+    return FALSE;
+  }
 
   /**
    * {@inheritdoc}
@@ -394,7 +395,7 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
   /**
    * {@inheritdoc}
    */
-  public function attachTo(ViewExecutable $view, $display_id, array &$build) { }
+  public function attachTo(ViewExecutable $view, $display_id, array &$build) {}
 
   /**
    * {@inheritdoc}
@@ -665,17 +666,23 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
   /**
    * {@inheritdoc}
    */
-  public function hasPath() { return FALSE; }
+  public function hasPath() {
+    return FALSE;
+  }
 
   /**
    * {@inheritdoc}
    */
-  public function usesLinkDisplay() { return !$this->hasPath(); }
+  public function usesLinkDisplay() {
+    return !$this->hasPath();
+  }
 
   /**
    * {@inheritdoc}
    */
-  public function usesExposedFormInBlock() { return $this->hasPath(); }
+  public function usesExposedFormInBlock() {
+    return $this->hasPath();
+  }
 
   /**
    * {@inheritdoc}
@@ -1463,7 +1470,7 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
           '#title' => $this->t('Show contextual links'),
           '#default_value' => $this->getOption('show_admin_links'),
         ];
-      break;
+        break;
       case 'use_more':
         $form['#title'] .= $this->t('Add a more link to the bottom of the display.');
         $form['use_more'] = [
@@ -1858,7 +1865,7 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
         if (preg_match('/[^a-zA-Z0-9-_ ]/', $css_class)) {
           $form_state->setError($form['css_class'], $this->t('CSS classes must be alphanumeric or dashes only.'));
         }
-      break;
+        break;
       case 'display_id':
         if ($form_state->getValue('display_id')) {
           if (preg_match('/[^a-z0-9_]/', $form_state->getValue('display_id'))) {
@@ -2051,7 +2058,7 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
   /**
    * {@inheritdoc}
    */
-  public function renderFilters() { }
+  public function renderFilters() {}
 
   /**
    * {@inheritdoc}
@@ -2325,7 +2332,7 @@ abstract class DisplayPluginBase extends PluginBase implements DisplayPluginInte
   /**
    * {@inheritdoc}
    */
-  public function execute() { }
+  public function execute() {}
 
   /**
    * {@inheritdoc}

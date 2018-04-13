@@ -1,0 +1,13 @@
+diff --git a/core/modules/views_ui/js/views-admin.js b/core/modules/views_ui/js/views-admin.js
+index 10fa430..a632cea 100644
+--- a/core/modules/views_ui/js/views-admin.js
++++ b/core/modules/views_ui/js/views-admin.js
+@@ -463,7 +463,7 @@
+         var $draggableRow = $(this.draggableRows[i]);
+         var $firstCell = $draggableRow.find('td').eq(0);
+         if ($firstCell.length) {
+-          var operatorValue = $draggableRow.prevAll('.views-group-title').find('option:selected').html();
++          var operatorValue = $draggableRow.prevAll('.views-group-title:first').find('option:selected').html();
+           var operatorLabel = '<span class="views-operator-label">' + operatorValue + '</span>';
+ 
+           var $nextRow = $draggableRow.nextAll(':visible').eq(0);

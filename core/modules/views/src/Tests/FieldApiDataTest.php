@@ -35,8 +35,8 @@ class FieldApiDataTest extends FieldTestBase {
    */
   protected $translationNodes;
 
-  protected function setUp() {
-    parent::setUp(FALSE);
+  protected function setUp($import_test_views = TRUE) {
+    parent::setUp($import_test_views);
 
     $field_names = $this->setUpFieldStorages(4);
 
@@ -335,8 +335,7 @@ class FieldApiDataTest extends FieldTestBase {
     // Filter by 'field name 2: fr', which doesn't exist.
     $view->setDisplay('embed_4');
     $this->executeView($view);
-    $expected = [
-    ];
+    $expected = [];
 
     $this->assertIdenticalResultset($view, $expected, $map);
     $view->destroy();

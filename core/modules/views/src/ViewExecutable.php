@@ -2,6 +2,7 @@
 
 namespace Drupal\views;
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Tags;
 use Drupal\Core\Routing\RouteProviderInterface;
@@ -330,7 +331,7 @@ class ViewExecutable {
   protected $request;
 
   /**
-   * Does this view already have loaded it's handlers.
+   * Does this view already have loaded its handlers.
    *
    * @todo Group with other static properties.
    *
@@ -618,7 +619,6 @@ class ViewExecutable {
 
     $this->offset = $offset;
 
-
     // If the pager is already initialized, pass it through to the pager.
     if (!empty($this->pager)) {
       $this->pager->setOffset($offset);
@@ -799,7 +799,7 @@ class ViewExecutable {
 
     // Ensure the requested display exists.
     if (!$this->displayHandlers->has($display_id)) {
-      debug(format_string('setDisplay() called with invalid display ID "@display".', ['@display' => $display_id]));
+      trigger_error(new FormattableMarkup('setDisplay() called with invalid display ID "@display".', ['@display' => $display_id]), E_USER_WARNING);
       return FALSE;
     }
 
@@ -1338,8 +1338,8 @@ class ViewExecutable {
    * @todo Some filter needs this function, even it is internal.
    *
    * @param string $key
-   *    The type of handlers (filter etc.) which should be iterated over to
-   *    build the relationship and query information.
+   *   The type of handlers (filter etc.) which should be iterated over to build
+   *   the relationship and query information.
    */
   public function _build($key) {
     $handlers = &$this->$key;
@@ -1757,7 +1757,7 @@ class ViewExecutable {
 
     // We can't use choose_display() here because that function
     // calls this one.
-    $displays = (array)$displays;
+    $displays = (array) $displays;
     foreach ($displays as $display_id) {
       if ($this->displayHandlers->has($display_id)) {
         if (($display = $this->displayHandlers->get($display_id)) && $display->access($account)) {

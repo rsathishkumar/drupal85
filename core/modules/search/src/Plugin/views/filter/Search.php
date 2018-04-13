@@ -34,6 +34,8 @@ class Search extends FilterPluginBase {
 
   /**
    * TRUE if the search query has been parsed.
+   *
+   * @var bool
    */
   protected $parsed = FALSE;
 
@@ -172,7 +174,7 @@ class Search extends FilterPluginBase {
       $search_dataset = $this->query->addTable('node_search_dataset');
       $conditions = $this->searchQuery->conditions();
       $condition_conditions =& $conditions->conditions();
-      foreach ($condition_conditions  as $key => &$condition) {
+      foreach ($condition_conditions as $key => &$condition) {
         // Make sure we just look at real conditions.
         if (is_numeric($key)) {
           // Replace the conditions with the table alias of views.

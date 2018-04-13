@@ -5,6 +5,7 @@ namespace Drupal\Tests\rest\Functional\EntityResource\Comment;
 use Drupal\comment\Entity\Comment;
 use Drupal\comment\Entity\CommentType;
 use Drupal\comment\Tests\CommentTestTrait;
+use Drupal\Core\Cache\Cache;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\Tests\rest\Functional\BcTimestampNormalizerUnixTestTrait;
 use Drupal\Tests\rest\Functional\EntityResource\EntityResourceTestBase;
@@ -197,6 +198,7 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
         [
           'value' => 'The name "llama" was adopted by European settlers from native Peruvians.',
           'format' => 'plain_text',
+          'processed' => '<p>The name &quot;llama&quot; was adopted by European settlers from native Peruvians.</p>' . "\n",
         ],
       ],
     ];
@@ -249,6 +251,20 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  protected function getExpectedCacheTags() {
+    return Cache::mergeTags(parent::getExpectedCacheTags(), ['config:filter.format.plain_text']);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getExpectedCacheContexts() {
+    return Cache::mergeContexts(['languages:language_interface', 'theme'], parent::getExpectedCacheContexts());
+  }
+
+  /**
    * Tests POSTing a comment without critical base fields.
    *
    * testPost() is testing with the most minimal normalization possible: the one
@@ -279,7 +295,7 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
     $this->assertSame(500, $response->getStatusCode());
     $this->assertSame(['text/plain; charset=UTF-8'], $response->getHeader('Content-Type'));
     $this->assertStringStartsWith('The website encountered an unexpected error. Please try again later.</br></br><em class="placeholder">Symfony\Component\HttpKernel\Exception\HttpException</em>: Internal Server Error in <em class="placeholder">Drupal\rest\Plugin\rest\resource\EntityResource-&gt;post()</em>', (string) $response->getBody());
-    //$this->assertResourceErrorResponse(422, "Unprocessable Entity: validation failed.\nentity_type: This value should not be null.\n", $response);
+    // $this->assertResourceErrorResponse(422, "Unprocessable Entity: validation failed.\nentity_type: This value should not be null.\n", $response);
 
     // DX: 422 when missing 'entity_id' field.
     $request_options[RequestOptions::BODY] = $this->serializer->encode(array_diff_key($this->getNormalizedPostEntity(), ['entity_id' => TRUE]), static::$format);
@@ -288,14 +304,14 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
     try {
       $response = $this->request('POST', $url, $request_options);
       // This happens on DrupalCI.
-      //$this->assertSame(500, $response->getStatusCode());
+      // $this->assertSame(500, $response->getStatusCode());
     }
     catch (\Exception $e) {
       // This happens on Wim's local machine.
-      //$this->assertSame("Error: Call to a member function get() on null\nDrupal\\comment\\Plugin\\Validation\\Constraint\\CommentNameConstraintValidator->getAnonymousContactDetailsSetting()() (Line: 96)\n", $e->getMessage());
+      // $this->assertSame("Error: Call to a member function get() on null\nDrupal\\comment\\Plugin\\Validation\\Constraint\\CommentNameConstraintValidator->getAnonymousContactDetailsSetting()() (Line: 96)\n", $e->getMessage());
     }
-    //$response = $this->request('POST', $url, $request_options);
-    //$this->assertResourceErrorResponse(422, "Unprocessable Entity: validation failed.\nentity_type: This value should not be null.\n", $response);
+    // $response = $this->request('POST', $url, $request_options);
+    // $this->assertResourceErrorResponse(422, "Unprocessable Entity: validation failed.\nentity_type: This value should not be null.\n", $response);
 
     // DX: 422 when missing 'entity_type' field.
     $request_options[RequestOptions::BODY] = $this->serializer->encode(array_diff_key($this->getNormalizedPostEntity(), ['field_name' => TRUE]), static::$format);
@@ -303,7 +319,7 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
     // @todo Uncomment, remove next 2 lines in https://www.drupal.org/node/2820364.
     $this->assertSame(500, $response->getStatusCode());
     $this->assertSame(['text/plain; charset=UTF-8'], $response->getHeader('Content-Type'));
-    //$this->assertResourceErrorResponse(422, "Unprocessable Entity: validation failed.\nfield_name: This value should not be null.\n", $response);
+    // $this->assertResourceErrorResponse(422, "Unprocessable Entity: validation failed.\nfield_name: This value should not be null.\n", $response);
   }
 
   /**
@@ -355,6 +371,15 @@ abstract class CommentResourceTestBase extends EntityResourceTestBase {
     $unserialized = $this->serializer->deserialize((string) $response->getBody(), get_class($this->entity), static::$format);
     $this->assertResourceResponse(201, FALSE, $response);
     $this->assertTrue($unserialized->getStatus());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getExpectedUnauthorizedAccessCacheability() {
+    // @see \Drupal\comment\CommentAccessControlHandler::checkAccess()
+    return parent::getExpectedUnauthorizedAccessCacheability()
+      ->addCacheTags(['comment:1']);
   }
 
 }

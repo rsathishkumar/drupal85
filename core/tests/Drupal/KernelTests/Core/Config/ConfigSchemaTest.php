@@ -40,7 +40,7 @@ class ConfigSchemaTest extends KernelTestBase {
    */
   public function testSchemaMapping() {
     // Nonexistent configuration key will have Undefined as metadata.
-    $this->assertIdentical(FALSE, \Drupal::service('config.typed')->hasConfigSchema('config_schema_test.no_such_key'));
+    $this->assertSame(FALSE, \Drupal::service('config.typed')->hasConfigSchema('config_schema_test.no_such_key'));
     $definition = \Drupal::service('config.typed')->getDefinition('config_schema_test.no_such_key');
     $expected = [];
     $expected['label'] = 'Undefined';
@@ -51,12 +51,12 @@ class ConfigSchemaTest extends KernelTestBase {
     $this->assertEqual($definition, $expected, 'Retrieved the right metadata for nonexistent configuration.');
 
     // Configuration file without schema will return Undefined as well.
-    $this->assertIdentical(FALSE, \Drupal::service('config.typed')->hasConfigSchema('config_schema_test.noschema'));
+    $this->assertSame(FALSE, \Drupal::service('config.typed')->hasConfigSchema('config_schema_test.noschema'));
     $definition = \Drupal::service('config.typed')->getDefinition('config_schema_test.noschema');
     $this->assertEqual($definition, $expected, 'Retrieved the right metadata for configuration with no schema.');
 
     // Configuration file with only some schema.
-    $this->assertIdentical(TRUE, \Drupal::service('config.typed')->hasConfigSchema('config_schema_test.someschema'));
+    $this->assertSame(TRUE, \Drupal::service('config.typed')->hasConfigSchema('config_schema_test.someschema'));
     $definition = \Drupal::service('config.typed')->getDefinition('config_schema_test.someschema');
     $expected = [];
     $expected['label'] = 'Schema test data';
@@ -211,7 +211,6 @@ class ConfigSchemaTest extends KernelTestBase {
     $expected['mapping']['upscale']['label'] = 'Upscale';
     $expected['type'] = 'image.effect.image_scale';
 
-
     $this->assertEqual($definition, $expected, 'Retrieved the right metadata for image.effect.image_scale');
 
     // Most complex case, get metadata for actual configuration element.
@@ -336,7 +335,7 @@ class ConfigSchemaTest extends KernelTestBase {
     $effect = $effects->get($uuid)->getElements();
     $this->assertTrue(!$effect['data']->isEmpty() && $effect['id']->getValue() == 'image_scale', 'Got data for the image scale effect from metadata.');
     $this->assertTrue($effect['data']->get('width') instanceof IntegerInterface, 'Got the right type for the scale effect width.');
-    $this->assertEqual($effect['data']->get('width')->getValue(), 480, 'Got the right value for the scale effect width.' );
+    $this->assertEqual($effect['data']->get('width')->getValue(), 480, 'Got the right value for the scale effect width.');
   }
 
   /**
@@ -504,8 +503,8 @@ class ConfigSchemaTest extends KernelTestBase {
 
     $definition2 = \Drupal::service('config.typed')->getDefinition('config_schema_test.wildcard_fallback.something.something');
     // This should be the schema of config_schema_test.wildcard_fallback.* as
-    //well.
-    $this->assertIdentical($definition, $definition2);
+    // well.
+    $this->assertSame($definition, $definition2);
   }
 
   /**

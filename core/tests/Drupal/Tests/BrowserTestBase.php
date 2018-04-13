@@ -19,11 +19,10 @@ use Drupal\Core\Test\TestSetupTrait;
 use Drupal\Core\Url;
 use Drupal\Core\Utility\Error;
 use Drupal\FunctionalTests\AssertLegacyTrait;
-use Drupal\simpletest\AssertHelperTrait;
-use Drupal\simpletest\BlockCreationTrait;
-use Drupal\simpletest\ContentTypeCreationTrait;
-use Drupal\simpletest\NodeCreationTrait;
-use Drupal\simpletest\UserCreationTrait;
+use Drupal\Tests\block\Traits\BlockCreationTrait;
+use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
+use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -35,6 +34,10 @@ use Symfony\Component\CssSelector\CssSelectorConverter;
  * Tests extending BrowserTestBase must exist in the
  * Drupal\Tests\yourmodule\Functional namespace and live in the
  * modules/yourmodule/tests/src/Functional directory.
+ *
+ * Tests extending this base class should only translate text when testing
+ * translation functionality. For example, avoid wrapping test text with t()
+ * or TranslatableMarkup().
  *
  * @ingroup testing
  */
@@ -57,11 +60,13 @@ abstract class BrowserTestBase extends TestCase {
     createContentType as drupalCreateContentType;
   }
   use ConfigTestTrait;
+  use TestRequirementsTrait;
   use UserCreationTrait {
     createRole as drupalCreateRole;
     createUser as drupalCreateUser;
   }
   use XdebugRequestTrait;
+  use PhpunitCompatibilityTrait;
 
   /**
    * The database prefix of this test run.
@@ -340,12 +345,12 @@ abstract class BrowserTestBase extends TestCase {
    *   When provided default Mink driver class can't be instantiated.
    */
   protected function getDefaultDriverInstance() {
-    // Get default driver params from environment if availables.
-    if ($arg_json = getenv('MINK_DRIVER_ARGS')) {
-      $this->minkDefaultDriverArgs = json_decode($arg_json);
+    // Get default driver params from environment if available.
+    if ($arg_json = $this->getMinkDriverArgs()) {
+      $this->minkDefaultDriverArgs = json_decode($arg_json, TRUE);
     }
 
-    // Get and check default driver class from environment if availables.
+    // Get and check default driver class from environment if available.
     if ($minkDriverClass = getenv('MINK_DRIVER_CLASS')) {
       if (class_exists($minkDriverClass)) {
         $this->minkDefaultDriverClass = $minkDriverClass;
@@ -364,6 +369,42 @@ abstract class BrowserTestBase extends TestCase {
       $driver = new $this->minkDefaultDriverClass();
     }
     return $driver;
+  }
+
+  /**
+   * Creates the directory to store browser output.
+   *
+   * Creates the directory to store browser output in if a file to write
+   * URLs to has been created by \Drupal\Tests\Listeners\HtmlOutputPrinter.
+   */
+  protected function initBrowserOutputFile() {
+    $browser_output_file = getenv('BROWSERTEST_OUTPUT_FILE');
+    $this->htmlOutputEnabled = is_file($browser_output_file);
+    if ($this->htmlOutputEnabled) {
+      $this->htmlOutputFile = $browser_output_file;
+      $this->htmlOutputClassName = str_replace("\\", "_", get_called_class());
+      $this->htmlOutputDirectory = DRUPAL_ROOT . '/sites/simpletest/browser_output';
+      if (file_prepare_directory($this->htmlOutputDirectory, FILE_CREATE_DIRECTORY) && !file_exists($this->htmlOutputDirectory . '/.htaccess')) {
+        file_put_contents($this->htmlOutputDirectory . '/.htaccess', "<IfModule mod_expires.c>\nExpiresActive Off\n</IfModule>\n");
+      }
+      $this->htmlOutputCounterStorage = $this->htmlOutputDirectory . '/' . $this->htmlOutputClassName . '.counter';
+      $this->htmlOutputTestId = str_replace('sites/simpletest/', '', $this->siteDirectory);
+      if (is_file($this->htmlOutputCounterStorage)) {
+        $this->htmlOutputCounter = max(1, (int) file_get_contents($this->htmlOutputCounterStorage)) + 1;
+      }
+    }
+  }
+
+  /**
+   * Get the Mink driver args from an environment variable, if it is set. Can
+   * be overridden in a derived class so it is possible to use a different
+   * value for a subset of tests, e.g. the JavaScript tests.
+   *
+   *  @return string|false
+   *   The JSON-encoded argument string. False if it is not set.
+   */
+  protected function getMinkDriverArgs() {
+    return getenv('MINK_DRIVER_ARGS');
   }
 
   /**
@@ -422,6 +463,15 @@ abstract class BrowserTestBase extends TestCase {
    * {@inheritdoc}
    */
   protected function setUp() {
+    // Installing Drupal creates 1000s of objects. Garbage collection of these
+    // objects is expensive. This appears to be causing random segmentation
+    // faults in PHP 5.x due to https://bugs.php.net/bug.php?id=72286. Once
+    // Drupal is installed is rebuilt, garbage collection is re-enabled.
+    $disable_gc = version_compare(PHP_VERSION, '7', '<') && gc_enabled();
+    if ($disable_gc) {
+      gc_collect_cycles();
+      gc_disable();
+    }
     parent::setUp();
 
     $this->setupBaseUrl();
@@ -440,23 +490,18 @@ abstract class BrowserTestBase extends TestCase {
       }
     }
 
-    // Creates the directory to store browser output in if a file to write
-    // URLs to has been created by \Drupal\Tests\Listeners\HtmlOutputPrinter.
-    $browser_output_file = getenv('BROWSERTEST_OUTPUT_FILE');
-    $this->htmlOutputEnabled = is_file($browser_output_file);
-    if ($this->htmlOutputEnabled) {
-      $this->htmlOutputFile = $browser_output_file;
-      $this->htmlOutputClassName = str_replace("\\", "_", get_called_class());
-      $this->htmlOutputDirectory = DRUPAL_ROOT . '/sites/simpletest/browser_output';
-      if (file_prepare_directory($this->htmlOutputDirectory, FILE_CREATE_DIRECTORY) && !file_exists($this->htmlOutputDirectory . '/.htaccess')) {
-        file_put_contents($this->htmlOutputDirectory . '/.htaccess', "<IfModule mod_expires.c>\nExpiresActive Off\n</IfModule>\n");
-      }
-      $this->htmlOutputCounterStorage = $this->htmlOutputDirectory . '/' . $this->htmlOutputClassName . '.counter';
-      $this->htmlOutputTestId = str_replace('sites/simpletest/', '', $this->siteDirectory);
-      if (is_file($this->htmlOutputCounterStorage)) {
-        $this->htmlOutputCounter = max(1, (int) file_get_contents($this->htmlOutputCounterStorage)) + 1;
-      }
+    // Set up the browser test output file.
+    $this->initBrowserOutputFile();
+    // If garbage collection was disabled prior to rebuilding container,
+    // re-enable it.
+    if ($disable_gc) {
+      gc_enable();
     }
+
+    // Ensure that the test is not marked as risky because of no assertions. In
+    // PHPUnit 6 tests that only make assertions using $this->assertSession()
+    // can be marked as risky.
+    $this->addToAssertionCount(1);
   }
 
   /**
@@ -768,10 +813,10 @@ abstract class BrowserTestBase extends TestCase {
    *   be unchecked.
    * @param string $submit
    *   Value of the submit button whose click is to be emulated. For example,
-   *   t('Save'). The processing of the request depends on this value. For
-   *   example, a form may have one button with the value t('Save') and another
-   *   button with the value t('Delete'), and execute different code depending
-   *   on which one is clicked.
+   *   'Save'. The processing of the request depends on this value. For example,
+   *   a form may have one button with the value 'Save' and another button with
+   *   the value 'Delete', and execute different code depending on which one is
+   *   clicked.
    * @param string $form_html_id
    *   (optional) HTML ID of the form to be submitted. On some pages
    *   there are many identical forms, so just using the value of the submit
@@ -850,11 +895,11 @@ abstract class BrowserTestBase extends TestCase {
    *   @code
    *   // First step in form.
    *   $edit = array(...);
-   *   $this->drupalPostForm('some_url', $edit, t('Save'));
+   *   $this->drupalPostForm('some_url', $edit, 'Save');
    *
    *   // Second step in form.
    *   $edit = array(...);
-   *   $this->drupalPostForm(NULL, $edit, t('Save'));
+   *   $this->drupalPostForm(NULL, $edit, 'Save');
    *   @endcode
    * @param array $edit
    *   Field data in an associative array. Changes the current input fields
@@ -884,10 +929,10 @@ abstract class BrowserTestBase extends TestCase {
    *     https://www.drupal.org/node/2802401
    * @param string $submit
    *   Value of the submit button whose click is to be emulated. For example,
-   *   t('Save'). The processing of the request depends on this value. For
-   *   example, a form may have one button with the value t('Save') and another
-   *   button with the value t('Delete'), and execute different code depending
-   *   on which one is clicked.
+   *   'Save'. The processing of the request depends on this value. For example,
+   *   a form may have one button with the value 'Save' and another button with
+   *   the value 'Delete', and execute different code depending on which one is
+   *   clicked.
    *
    *   This function can also be called to emulate an Ajax submission. In this
    *   case, this value needs to be an array with the following keys:
@@ -906,6 +951,11 @@ abstract class BrowserTestBase extends TestCase {
    *   POST data.
    * @param array $options
    *   Options to be forwarded to the url generator.
+   *
+   * @return string
+   *   (deprecated) The response content after submit form. It is necessary for
+   *   backwards compatibility and will be removed before Drupal 9.0. You should
+   *   just use the webAssert object for your assertions.
    */
   protected function drupalPostForm($path, $edit, $submit, array $options = []) {
     if (is_object($submit)) {
@@ -924,6 +974,8 @@ abstract class BrowserTestBase extends TestCase {
     }
 
     $this->submitForm($edit, $submit);
+
+    return $this->getSession()->getPage()->getContent();
   }
 
   /**
@@ -1054,7 +1106,7 @@ abstract class BrowserTestBase extends TestCase {
    *   The formatted HTML string.
    */
   protected function formatHtmlOutputHeaders(array $headers) {
-    $flattened_headers = array_map(function($header) {
+    $flattened_headers = array_map(function ($header) {
       if (is_array($header)) {
         return implode(';', array_map('trim', $header));
       }
@@ -1259,13 +1311,13 @@ abstract class BrowserTestBase extends TestCase {
    * Checks for meta refresh tag and if found call drupalGet() recursively.
    *
    * This function looks for the http-equiv attribute to be set to "Refresh" and
-   * is case-sensitive.
+   * is case-insensitive.
    *
    * @return string|false
    *   Either the new page content or FALSE.
    */
   protected function checkForMetaRefresh() {
-    $refresh = $this->cssSelect('meta[http-equiv="Refresh"]');
+    $refresh = $this->cssSelect('meta[http-equiv="Refresh"], meta[http-equiv="refresh"]');
     if (!empty($refresh) && (!isset($this->maximumMetaRefreshCount) || $this->metaRefreshCount < $this->maximumMetaRefreshCount)) {
       // Parse the content attribute of the meta tag for the format:
       // "[delay]: URL=[page_to_redirect_to]".

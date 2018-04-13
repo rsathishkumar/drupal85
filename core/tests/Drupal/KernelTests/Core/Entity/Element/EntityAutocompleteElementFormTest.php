@@ -179,12 +179,12 @@ class EntityAutocompleteElementFormTest extends EntityKernelTestBase implements 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) { }
+  public function submitForm(array &$form, FormStateInterface $form_state) {}
 
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) { }
+  public function validateForm(array &$form, FormStateInterface $form_state) {}
 
   /**
    * Tests valid entries in the EntityAutocomplete Form API element.
@@ -353,7 +353,7 @@ class EntityAutocompleteElementFormTest extends EntityKernelTestBase implements 
   public function testEntityAutocompleteIdInput() {
     /** @var \Drupal\Core\Form\FormBuilderInterface $form_builder */
     $form_builder = $this->container->get('form_builder');
-    //$form = $form_builder->getForm($this);
+    // $form = $form_builder->getForm($this);
     $form_state = (new FormState())
       ->setMethod('GET')
       ->setValues([
@@ -382,29 +382,6 @@ class EntityAutocompleteElementFormTest extends EntityKernelTestBase implements 
    */
   protected function getAutocompleteInput(EntityInterface $entity) {
     return EntityAutocomplete::getEntityLabels([$entity]);
-  }
-
-  /**
-   * Tests Single entries in the EntityAutocomplete Form API element.
-   * Test autocomplete values by entering comma seperated entity values to
-   * single entries value and check the result.
-   */
-  public function testSingleEntryEntityAutocompleteElement() {
-    // Test 'single' with a multiple comma seperated entity values.
-    $form_state = (new FormState())
-      ->setValues([
-        'single' => $this->getAutocompleteInput($this->referencedEntities[1]) . ', '. $this->getAutocompleteInput($this->referencedEntities[0]),
-      ]);
-
-    $form_builder = $this->container->get('form_builder');
-    $form_builder->submitForm($this, $form_state);
-
-    // Valid form state.
-    $this->assertEqual(count($form_state->getErrors()), 0);
-
-    // Check the value of autocomplete value has the valid value.
-    $this->assertEqual($form_state->getValue('single'), $this->referencedEntities[1]->id());
-
   }
 
 }

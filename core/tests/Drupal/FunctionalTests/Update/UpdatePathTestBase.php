@@ -205,23 +205,8 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
       }
     }
 
-    // Creates the directory to store browser output in if a file to write
-    // URLs to has been created by \Drupal\Tests\Listeners\HtmlOutputPrinter.
-    $browser_output_file = getenv('BROWSERTEST_OUTPUT_FILE');
-    $this->htmlOutputEnabled = is_file($browser_output_file);
-    if ($this->htmlOutputEnabled) {
-      $this->htmlOutputFile = $browser_output_file;
-      $this->htmlOutputClassName = str_replace("\\", "_", get_called_class());
-      $this->htmlOutputDirectory = DRUPAL_ROOT . '/sites/simpletest/browser_output';
-      if (file_prepare_directory($this->htmlOutputDirectory, FILE_CREATE_DIRECTORY) && !file_exists($this->htmlOutputDirectory . '/.htaccess')) {
-        file_put_contents($this->htmlOutputDirectory . '/.htaccess', "<IfModule mod_expires.c>\nExpiresActive Off\n</IfModule>\n");
-      }
-      $this->htmlOutputCounterStorage = $this->htmlOutputDirectory . '/' . $this->htmlOutputClassName . '.counter';
-      $this->htmlOutputTestId = str_replace('sites/simpletest/', '', $this->siteDirectory);
-      if (is_file($this->htmlOutputCounterStorage)) {
-        $this->htmlOutputCounter = max(1, (int) file_get_contents($this->htmlOutputCounterStorage)) + 1;
-      }
-    }
+    // Set up the browser test output file.
+    $this->initBrowserOutputFile();
   }
 
   /**
@@ -332,10 +317,14 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
     }
     // The site might be broken at the time so logging in using the UI might
     // not work, so we use the API itself.
-    drupal_rewrite_settings(['settings' => ['update_free_access' => (object) [
-      'value' => TRUE,
-      'required' => TRUE,
-    ]]]);
+    drupal_rewrite_settings([
+      'settings' => [
+        'update_free_access' => (object) [
+          'value' => TRUE,
+          'required' => TRUE,
+        ],
+      ],
+    ]);
 
     $this->drupalGet($this->updateUrl);
     $this->clickLink(t('Continue'));
@@ -385,7 +374,6 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
 
       // Ensure that the update hooks updated all entity schema.
       $needs_updates = \Drupal::entityDefinitionUpdateManager()->needsUpdates();
-      $this->assertFalse($needs_updates, 'After all updates ran, entity schema is up to date.');
       if ($needs_updates) {
         foreach (\Drupal::entityDefinitionUpdateManager()
           ->getChangeSummary() as $entity_type_id => $summary) {
@@ -393,6 +381,9 @@ abstract class UpdatePathTestBase extends BrowserTestBase {
             $this->fail($message);
           }
         }
+        // The above calls to `fail()` should prevent this from ever being
+        // called, but it is here in case something goes really wrong.
+        $this->assertFalse($needs_updates, 'After all updates ran, entity schema is up to date.');
       }
     }
   }

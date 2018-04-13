@@ -5,7 +5,6 @@ namespace Drupal\node\Plugin\views\argument;
 use Drupal\node\NodeStorageInterface;
 use Drupal\views\Plugin\views\argument\NumericArgument;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityRepositoryInterface;
 
 /**
  * Argument handler to accept a node id.
@@ -22,11 +21,6 @@ class Nid extends NumericArgument {
   protected $nodeStorage;
 
   /**
-   * @var \Drupal\Core\Entity\EntityRepositoryInterface
-   */
-  protected $entityRepository;
-
-  /**
    * Constructs the Nid object.
    *
    * @param array $configuration
@@ -35,12 +29,11 @@ class Nid extends NumericArgument {
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param NodeStorageInterface $node_storage
+   * @param \Drupal\node\NodeStorageInterface $node_storage
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, NodeStorageInterface $node_storage, EntityRepositoryInterface $entityRepository) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, NodeStorageInterface $node_storage) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->nodeStorage = $node_storage;
-    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -51,8 +44,7 @@ class Nid extends NumericArgument {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.manager')->getStorage('node'),
-      $container->get('entity.repository')
+      $container->get('entity.manager')->getStorage('node')
     );
   }
 
@@ -64,7 +56,7 @@ class Nid extends NumericArgument {
 
     $nodes = $this->nodeStorage->loadMultiple($this->value);
     foreach ($nodes as $node) {
-      $titles[] = $this->entityRepository->getTranslationFromContext($node)->label();
+      $titles[] = $node->label();
     }
     return $titles;
   }

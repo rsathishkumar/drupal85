@@ -7,6 +7,7 @@ use Drupal\Core\Plugin\PluginWithFormsTrait;
 use Drupal\workflows\State;
 use Drupal\workflows\StateInterface;
 use Drupal\workflows\Transition;
+use Drupal\workflows\TransitionInterface;
 use Drupal\workflows\WorkflowInterface;
 use Drupal\workflows\WorkflowTypeInterface;
 
@@ -14,10 +15,6 @@ use Drupal\workflows\WorkflowTypeInterface;
  * A base class for Workflow type plugins.
  *
  * @see \Drupal\workflows\Annotation\WorkflowType
- *
- * @internal
- *   The workflow system is currently experimental and should only be leveraged
- *   by experimental modules and development releases of contributed modules.
  */
 abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterface {
 
@@ -181,7 +178,11 @@ abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterf
    */
   public function setStateWeight($state_id, $weight) {
     if (!$this->hasState($state_id)) {
-      throw new \InvalidArgumentException("The state '$state_id' does not exist in workflow.'");
+      throw new \InvalidArgumentException("The state '$state_id' does not exist in workflow.");
+    }
+    if (!is_numeric($weight)) {
+      $label = $this->getState($state_id)->label();
+      throw new \InvalidArgumentException("The weight '$weight' must be numeric for state '$label'.");
     }
     $this->configuration['states'][$state_id]['weight'] = $weight;
     return $this;
@@ -267,25 +268,39 @@ abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterf
   }
 
   /**
-   * Sort states or transitions by weight and label.
+   * Sort states or transitions by weight, label, and key.
    *
    * @param \Drupal\workflows\StateInterface[]|\Drupal\workflows\TransitionInterface[] $objects
-   *   Objects to multi-sort.
+   *   An array of state or transition objects to multi-sort, keyed by the
+   *   state or transition ID.
    *
    * @return \Drupal\workflows\StateInterface[]|\Drupal\workflows\TransitionInterface[]
-   *   An array of sorted transitions or states.
+   *   An array of sorted transitions or states, keyed by the state or
+   *   transition ID.
    */
   protected static function labelWeightMultisort($objects) {
     if (count($objects) > 1) {
+      // Separate weights, labels, and keys into arrays.
       $weights = $labels = [];
+      $keys = array_keys($objects);
       foreach ($objects as $id => $object) {
         $weights[$id] = $object->weight();
         $labels[$id] = $object->label();
       }
+      // Sort weights, labels, and keys in the same order as each other.
       array_multisort(
+      // Use the numerical weight as the primary sort.
         $weights, SORT_NUMERIC, SORT_ASC,
-        $labels, SORT_NATURAL, SORT_ASC
+        // When objects have the same weight, sort them alphabetically by label.
+        $labels, SORT_NATURAL, SORT_ASC,
+        // Ensure that the keys (the object IDs) are sorted in the same order as
+        // the weights.
+        $keys
       );
+      // Combine keys and weights to make sure the weights are keyed with the
+      // correct keys.
+      $weights = array_combine($keys, $weights);
+      // Return the objects sorted by weight.
       return array_replace($weights, $objects);
     }
     return $objects;
@@ -318,7 +333,7 @@ abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterf
   /**
    * {@inheritdoc}
    */
-  public function getTransitionsForState($state_id, $direction = 'from') {
+  public function getTransitionsForState($state_id, $direction = TransitionInterface::DIRECTION_FROM) {
     $transition_ids = array_keys(array_filter($this->configuration['transitions'], function ($transition) use ($state_id, $direction) {
       return in_array($state_id, (array) $transition[$direction], TRUE);
     }));
@@ -379,7 +394,11 @@ abstract class WorkflowTypeBase extends PluginBase implements WorkflowTypeInterf
    */
   public function setTransitionWeight($transition_id, $weight) {
     if (!$this->hasTransition($transition_id)) {
-      throw new \InvalidArgumentException("The transition '$transition_id' does not exist in workflow.'");
+      throw new \InvalidArgumentException("The transition '$transition_id' does not exist in workflow.");
+    }
+    if (!is_numeric($weight)) {
+      $label = $this->getTransition($transition_id)->label();
+      throw new \InvalidArgumentException("The weight '$weight' must be numeric for transition '$label'.");
     }
     $this->configuration['transitions'][$transition_id]['weight'] = $weight;
     return $this;

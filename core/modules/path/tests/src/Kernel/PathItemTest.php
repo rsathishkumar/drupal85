@@ -70,6 +70,9 @@ class PathItemTest extends KernelTestBase {
     $loaded_node = $node_storage->load($node->id());
     $this->assertFalse($loaded_node->get('path')->isEmpty());
     $this->assertEquals('/foo', $loaded_node->get('path')->alias);
+    $node_storage->resetCache();
+    $loaded_node = $node_storage->load($node->id());
+    $this->assertEquals('/foo', $loaded_node->get('path')[0]->get('alias')->getValue());
 
     $node_storage->resetCache();
     $loaded_node = $node_storage->load($node->id());
@@ -168,6 +171,36 @@ class PathItemTest extends KernelTestBase {
     $this->assertEquals('/foobar', $loaded_node->get('path')->alias);
     $stored_alias = $alias_storage->lookupPathAlias('/' . $node->toUrl()->getInternalPath(), $node->language()->getId());
     $this->assertEquals('/foobar', $stored_alias);
+
+    // Check that \Drupal\Core\Field\FieldItemList::equals() for the path field
+    // type.
+    $node = Node::create([
+      'title' => $this->randomString(),
+      'type' => 'foo',
+      'path' => ['alias' => '/foo'],
+    ]);
+    $second_node = Node::create([
+      'title' => $this->randomString(),
+      'type' => 'foo',
+      'path' => ['alias' => '/foo'],
+    ]);
+    $this->assertTrue($node->get('path')->equals($second_node->get('path')));
+
+    // Change the alias for the second node to a different one and try again.
+    $second_node->get('path')->alias = '/foobar';
+    $this->assertFalse($node->get('path')->equals($second_node->get('path')));
+
+    // Test the generateSampleValue() method.
+    $node = Node::create([
+      'title' => $this->randomString(),
+      'type' => 'foo',
+      'path' => ['alias' => '/foo'],
+    ]);
+    $node->save();
+    $path_field = $node->get('path');
+    $path_field->generateSampleItems();
+    $node->save();
+    $this->assertStringStartsWith('/', $node->get('path')->alias);
   }
 
 }

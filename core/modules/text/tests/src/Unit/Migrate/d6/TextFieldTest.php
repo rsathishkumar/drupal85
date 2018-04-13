@@ -38,7 +38,7 @@ class TextFieldTest extends UnitTestCase {
     // process pipeline created by the plugin, we need to ensure that
     // getProcess() always returns the last input to setProcessOfProperty().
     $migration->setProcessOfProperty(Argument::type('string'), Argument::type('array'))
-      ->will(function($arguments) use ($migration) {
+      ->will(function ($arguments) use ($migration) {
         $migration->getProcess()->willReturn($arguments[1]);
       });
 
@@ -55,7 +55,7 @@ class TextFieldTest extends UnitTestCase {
     $this->plugin->processFieldValues($this->migration, 'body', $field_info);
 
     $process = $this->migration->getProcess();
-    $this->assertSame('iterator', $process['plugin']);
+    $this->assertSame('sub_process', $process['plugin']);
     $this->assertSame('body', $process['source']);
     $this->assertSame('value', $process['process']['value']);
 
@@ -123,37 +123,33 @@ class TextFieldTest extends UnitTestCase {
    */
   public function getFieldTypeProvider() {
     return [
-      ['string_long', 'text_textfield', [
-        'text_processing' => FALSE,
-      ]],
+      ['string_long', 'text_textfield', ['text_processing' => FALSE]],
       ['string', 'text_textfield', [
-        'text_processing' => FALSE,
-        'max_length' => 128,
-      ]],
+          'text_processing' => FALSE,
+          'max_length' => 128,
+        ],
+      ],
       ['string_long', 'text_textfield', [
-        'text_processing' => FALSE,
-        'max_length' => 4096,
-      ]],
-      ['text_long', 'text_textfield', [
-        'text_processing' => TRUE,
-      ]],
+          'text_processing' => FALSE,
+          'max_length' => 4096,
+        ],
+      ],
+      ['text_long', 'text_textfield', ['text_processing' => TRUE]],
       ['text', 'text_textfield', [
-        'text_processing' => TRUE,
-        'max_length' => 128,
-      ]],
+          'text_processing' => TRUE,
+          'max_length' => 128,
+        ],
+      ],
       ['text_long', 'text_textfield', [
-        'text_processing' => TRUE,
-        'max_length' => 4096,
-      ]],
+          'text_processing' => TRUE,
+          'max_length' => 4096,
+        ],
+      ],
       ['list_string', 'optionwidgets_buttons'],
       ['list_string', 'optionwidgets_select'],
       ['boolean', 'optionwidgets_onoff'],
-      ['text_long', 'text_textarea', [
-        'text_processing' => TRUE,
-      ]],
-      ['string_long', 'text_textarea', [
-        'text_processing' => FALSE,
-      ]],
+      ['text_long', 'text_textarea', ['text_processing' => TRUE]],
+      ['string_long', 'text_textarea', ['text_processing' => FALSE]],
       [NULL, 'undefined'],
     ];
   }

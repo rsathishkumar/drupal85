@@ -6,6 +6,7 @@ use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Datetime\Entity\DateFormat;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Tests\datetime\Functional\DateTestBase;
 use Drupal\datetime_range\Plugin\Field\FieldType\DateRangeItem;
 use Drupal\entity_test\Entity\EntityTest;
@@ -53,6 +54,7 @@ class DateRangeFieldTest extends DateTestBase {
     foreach (static::$timezones as $timezone) {
 
       $this->setSiteTimezone($timezone);
+      $this->assertEquals($timezone, $this->config('system.date')->get('timezone.default'), 'Time zone set to ' . $timezone);
 
       // Ensure field is set to a date-only field.
       $this->fieldStorage->setSetting('datetime_type', DateRangeItem::DATETIME_TYPE_DATE);
@@ -109,8 +111,8 @@ class DateRangeFieldTest extends DateTestBase {
       // Formats that display a time component for date-only fields will display
       // the default time, so that is applied before calculating the expected
       // value.
-      datetime_date_default_time($start_date);
-      datetime_date_default_time($end_date);
+      $this->massageTestDate($start_date);
+      $this->massageTestDate($end_date);
 
       // Reset display options since these get changed below.
       $this->displayOptions = [
@@ -127,22 +129,24 @@ class DateRangeFieldTest extends DateTestBase {
         ->setComponent($field_name, $this->displayOptions)
         ->save();
 
-      $start_expected = $this->dateFormatter->format($start_date->getTimestamp(), 'long', '', DATETIME_STORAGE_TIMEZONE);
-      $start_expected_iso = $this->dateFormatter->format($start_date->getTimestamp(), 'custom', 'Y-m-d\TH:i:s\Z', DATETIME_STORAGE_TIMEZONE);
+      $start_expected = $this->dateFormatter->format($start_date->getTimestamp(), 'long', '', DateTimeItemInterface::STORAGE_TIMEZONE);
+      $start_expected_iso = $this->dateFormatter->format($start_date->getTimestamp(), 'custom', 'Y-m-d\TH:i:s\Z', DateTimeItemInterface::STORAGE_TIMEZONE);
       $start_expected_markup = '<time datetime="' . $start_expected_iso . '" class="datetime">' . $start_expected . '</time>';
-      $end_expected = $this->dateFormatter->format($end_date->getTimestamp(), 'long', '', DATETIME_STORAGE_TIMEZONE);
-      $end_expected_iso = $this->dateFormatter->format($end_date->getTimestamp(), 'custom', 'Y-m-d\TH:i:s\Z', DATETIME_STORAGE_TIMEZONE);
+      $end_expected = $this->dateFormatter->format($end_date->getTimestamp(), 'long', '', DateTimeItemInterface::STORAGE_TIMEZONE);
+      $end_expected_iso = $this->dateFormatter->format($end_date->getTimestamp(), 'custom', 'Y-m-d\TH:i:s\Z', DateTimeItemInterface::STORAGE_TIMEZONE);
       $end_expected_markup = '<time datetime="' . $end_expected_iso . '" class="datetime">' . $end_expected . '</time>';
       $output = $this->renderTestEntity($id);
-      $this->assertContains($start_expected_markup, $output, new FormattableMarkup('Formatted date field using %value format displayed as %expected with %expected_iso attribute.', [
+      $this->assertContains($start_expected_markup, $output, new FormattableMarkup('Formatted date field using %value format displayed as %expected with %expected_iso attribute in %timezone.', [
         '%value' => 'long',
         '%expected' => $start_expected,
         '%expected_iso' => $start_expected_iso,
+        '%timezone' => $timezone,
       ]));
-      $this->assertContains($end_expected_markup, $output, new FormattableMarkup('Formatted date field using %value format displayed as %expected with %expected_iso attribute.', [
+      $this->assertContains($end_expected_markup, $output, new FormattableMarkup('Formatted date field using %value format displayed as %expected with %expected_iso attribute in %timezone.', [
         '%value' => 'long',
         '%expected' => $end_expected,
         '%expected_iso' => $end_expected_iso,
+        '%timezone' => $timezone,
       ]));
       $this->assertContains(' THESEPARATOR ', $output, 'Found proper separator');
 
@@ -157,9 +161,12 @@ class DateRangeFieldTest extends DateTestBase {
       entity_get_display($this->field->getTargetEntityTypeId(), $this->field->getTargetBundle(), 'full')
         ->setComponent($field_name, $this->displayOptions)
         ->save();
-      $expected = $start_date->format(DATETIME_DATE_STORAGE_FORMAT) . ' - ' . $end_date->format(DATETIME_DATE_STORAGE_FORMAT);
+      $expected = $start_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT) . ' - ' . $end_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT);
       $output = $this->renderTestEntity($id);
-      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected.', ['%expected' => $expected]));
+      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected in %timezone.', [
+        '%expected' => $expected,
+        '%timezone' => $timezone,
+      ]));
 
       // Verify that the custom formatter works.
       $this->displayOptions['type'] = 'daterange_custom';
@@ -169,7 +176,10 @@ class DateRangeFieldTest extends DateTestBase {
         ->save();
       $expected = $start_date->format($this->displayOptions['settings']['date_format']) . ' - ' . $end_date->format($this->displayOptions['settings']['date_format']);
       $output = $this->renderTestEntity($id);
-      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using daterange_custom format displayed as %expected.', ['%expected' => $expected]));
+      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using daterange_custom format displayed as %expected in %timezone.', [
+        '%expected' => $expected,
+        '%timezone' => $timezone,
+      ]));
 
       // Test that allowed markup in custom format is preserved and XSS is
       // removed.
@@ -179,7 +189,10 @@ class DateRangeFieldTest extends DateTestBase {
         ->save();
       $expected = '<strong>' . $start_date->format('m/d/Y') . '</strong>alert(String.fromCharCode(88,83,83)) - <strong>' . $end_date->format('m/d/Y') . '</strong>alert(String.fromCharCode(88,83,83))';
       $output = $this->renderTestEntity($id);
-      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using daterange_custom format displayed as %expected.', ['%expected' => $expected]));
+      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using daterange_custom format displayed as %expected in %timezone.', [
+        '%expected' => $expected,
+        '%timezone' => $timezone,
+      ]));
 
       // Test formatters when start date and end date are the same
       $this->drupalGet('entity_test/add');
@@ -199,7 +212,7 @@ class DateRangeFieldTest extends DateTestBase {
       $id = $match[1];
       $this->assertText(t('entity_test @id has been created.', ['@id' => $id]));
 
-      datetime_date_default_time($start_date);
+      $this->massageTestDate($start_date);
 
       $this->displayOptions = [
         'type' => 'daterange_default',
@@ -214,16 +227,17 @@ class DateRangeFieldTest extends DateTestBase {
         ->setComponent($field_name, $this->displayOptions)
         ->save();
 
-      $start_expected = $this->dateFormatter->format($start_date->getTimestamp(), 'long', '', DATETIME_STORAGE_TIMEZONE);
-      $start_expected_iso = $this->dateFormatter->format($start_date->getTimestamp(), 'custom', 'Y-m-d\TH:i:s\Z', DATETIME_STORAGE_TIMEZONE);
+      $start_expected = $this->dateFormatter->format($start_date->getTimestamp(), 'long', '', DateTimeItemInterface::STORAGE_TIMEZONE);
+      $start_expected_iso = $this->dateFormatter->format($start_date->getTimestamp(), 'custom', 'Y-m-d\TH:i:s\Z', DateTimeItemInterface::STORAGE_TIMEZONE);
       $start_expected_markup = '<time datetime="' . $start_expected_iso . '" class="datetime">' . $start_expected . '</time>';
       $output = $this->renderTestEntity($id);
-      $this->assertContains($start_expected_markup, $output, new FormattableMarkup('Formatted date field using %value format displayed as %expected with %expected_iso attribute.', [
+      $this->assertContains($start_expected_markup, $output, new FormattableMarkup('Formatted date field using %value format displayed as %expected with %expected_iso attribute in %timezone.', [
         '%value' => 'long',
         '%expected' => $start_expected,
         '%expected_iso' => $start_expected_iso,
+        '%timezone' => $timezone,
       ]));
-      $this->assertNotContains(' THESEPARATOR ', $output, 'Separator not found on page');
+      $this->assertNotContains(' THESEPARATOR ', $output, 'Separator not found on page in ' . $timezone);
 
       // Verify that hook_entity_prepare_view can add attributes.
       // @see entity_test_entity_prepare_view()
@@ -235,9 +249,12 @@ class DateRangeFieldTest extends DateTestBase {
       entity_get_display($this->field->getTargetEntityTypeId(), $this->field->getTargetBundle(), 'full')
         ->setComponent($field_name, $this->displayOptions)
         ->save();
-      $expected = $start_date->format(DATETIME_DATE_STORAGE_FORMAT);
+      $expected = $start_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT);
       $output = $this->renderTestEntity($id);
-      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected.', ['%expected' => $expected]));
+      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected in %timezone.', [
+        '%expected' => $expected,
+        '%timezone' => $timezone,
+      ]));
       $this->assertNotContains(' THESEPARATOR ', $output, 'Separator not found on page');
 
       $this->displayOptions['type'] = 'daterange_custom';
@@ -247,7 +264,10 @@ class DateRangeFieldTest extends DateTestBase {
         ->save();
       $expected = $start_date->format($this->displayOptions['settings']['date_format']);
       $output = $this->renderTestEntity($id);
-      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using daterange_custom format displayed as %expected.', ['%expected' => $expected]));
+      $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using daterange_custom format displayed as %expected in %timezone.', [
+        '%expected' => $expected,
+        '%timezone' => $timezone,
+      ]));
       $this->assertNotContains(' THESEPARATOR ', $output, 'Separator not found on page');
     }
   }
@@ -333,7 +353,7 @@ class DateRangeFieldTest extends DateTestBase {
     entity_get_display($this->field->getTargetEntityTypeId(), $this->field->getTargetBundle(), 'full')
       ->setComponent($field_name, $this->displayOptions)
       ->save();
-    $expected = $start_date->format(DATETIME_DATETIME_STORAGE_FORMAT) . ' - ' . $end_date->format(DATETIME_DATETIME_STORAGE_FORMAT);
+    $expected = $start_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT) . ' - ' . $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     $output = $this->renderTestEntity($id);
     $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected.', ['%expected' => $expected]));
 
@@ -409,7 +429,7 @@ class DateRangeFieldTest extends DateTestBase {
     entity_get_display($this->field->getTargetEntityTypeId(), $this->field->getTargetBundle(), 'full')
       ->setComponent($field_name, $this->displayOptions)
       ->save();
-    $expected = $start_date->format(DATETIME_DATETIME_STORAGE_FORMAT);
+    $expected = $start_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     $output = $this->renderTestEntity($id);
     $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected.', ['%expected' => $expected]));
     $this->assertNotContains(' THESEPARATOR ', $output, 'Separator not found on page');
@@ -501,7 +521,7 @@ class DateRangeFieldTest extends DateTestBase {
     entity_get_display($this->field->getTargetEntityTypeId(), $this->field->getTargetBundle(), 'full')
       ->setComponent($field_name, $this->displayOptions)
       ->save();
-    $expected = $start_date->format(DATETIME_DATETIME_STORAGE_FORMAT) . ' - ' . $end_date->format(DATETIME_DATETIME_STORAGE_FORMAT);
+    $expected = $start_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT) . ' - ' . $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     $output = $this->renderTestEntity($id);
     $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected.', ['%expected' => $expected]));
 
@@ -579,7 +599,7 @@ class DateRangeFieldTest extends DateTestBase {
     entity_get_display($this->field->getTargetEntityTypeId(), $this->field->getTargetBundle(), 'full')
       ->setComponent($field_name, $this->displayOptions)
       ->save();
-    $expected = $start_date->format(DATETIME_DATETIME_STORAGE_FORMAT) . ' THESEPARATOR ' . $end_date->format(DATETIME_DATETIME_STORAGE_FORMAT);
+    $expected = $start_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT) . ' THESEPARATOR ' . $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     $output = $this->renderTestEntity($id);
     $this->assertContains($expected, $output, new FormattableMarkup('Formatted date field using plain format displayed as %expected.', ['%expected' => $expected]));
     $this->assertContains(' THESEPARATOR ', $output, 'Found proper separator');
@@ -1001,9 +1021,9 @@ class DateRangeFieldTest extends DateTestBase {
 
     // Create a new node to check that datetime field default value is today.
     $new_node = Node::create(['type' => 'date_content']);
-    $expected_date = new DrupalDateTime('now', DATETIME_STORAGE_TIMEZONE);
-    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->value, $expected_date->format(DATETIME_DATE_STORAGE_FORMAT));
-    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->end_value, $expected_date->format(DATETIME_DATE_STORAGE_FORMAT));
+    $expected_date = new DrupalDateTime('now', DateTimeItemInterface::STORAGE_TIMEZONE);
+    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->value, $expected_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT));
+    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->end_value, $expected_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT));
 
     // Set an invalid relative default_value to test validation.
     $field_edit = [
@@ -1054,10 +1074,10 @@ class DateRangeFieldTest extends DateTestBase {
 
     // Create a new node to check that datetime field default value is +90 days.
     $new_node = Node::create(['type' => 'date_content']);
-    $expected_start_date = new DrupalDateTime('+45 days', DATETIME_STORAGE_TIMEZONE);
-    $expected_end_date = new DrupalDateTime('+90 days', DATETIME_STORAGE_TIMEZONE);
-    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->value, $expected_start_date->format(DATETIME_DATE_STORAGE_FORMAT));
-    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->end_value, $expected_end_date->format(DATETIME_DATE_STORAGE_FORMAT));
+    $expected_start_date = new DrupalDateTime('+45 days', DateTimeItemInterface::STORAGE_TIMEZONE);
+    $expected_end_date = new DrupalDateTime('+90 days', DateTimeItemInterface::STORAGE_TIMEZONE);
+    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->value, $expected_start_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT));
+    $this->assertEqual($new_node->get($field_name)->offsetGet(0)->end_value, $expected_end_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT));
 
     // Remove default value.
     $field_edit = [
@@ -1091,7 +1111,7 @@ class DateRangeFieldTest extends DateTestBase {
       ])
       ->save();
 
-    $expected_date = new DrupalDateTime('now', DATETIME_STORAGE_TIMEZONE);
+    $expected_date = new DrupalDateTime('now', DateTimeItemInterface::STORAGE_TIMEZONE);
 
     $field_edit = [
       'default_value_input[default_date_type]' => 'now',
@@ -1101,7 +1121,7 @@ class DateRangeFieldTest extends DateTestBase {
 
     // Make sure only the start value is populated on node add page.
     $this->drupalGet('node/add/date_content');
-    $this->assertFieldByName("{$field_name}[0][value][date]", $expected_date->format(DATETIME_DATE_STORAGE_FORMAT), 'Start date element populated.');
+    $this->assertFieldByName("{$field_name}[0][value][date]", $expected_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT), 'Start date element populated.');
     $this->assertFieldByName("{$field_name}[0][end_value][date]", '', 'End date element empty.');
 
     // Set now as default_value for end date only.
@@ -1114,7 +1134,7 @@ class DateRangeFieldTest extends DateTestBase {
     // Make sure only the start value is populated on node add page.
     $this->drupalGet('node/add/date_content');
     $this->assertFieldByName("{$field_name}[0][value][date]", '', 'Start date element empty.');
-    $this->assertFieldByName("{$field_name}[0][end_value][date]", $expected_date->format(DATETIME_DATE_STORAGE_FORMAT), 'End date element populated.');
+    $this->assertFieldByName("{$field_name}[0][end_value][date]", $expected_date->format(DateTimeItemInterface::DATE_STORAGE_FORMAT), 'End date element populated.');
   }
 
   /**

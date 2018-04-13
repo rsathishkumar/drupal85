@@ -53,6 +53,8 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
 
   /**
    * Contains the operator which is used on the query.
+   *
+   * @var string
    */
   public $operator = '=';
 
@@ -104,7 +106,6 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       $this->options['expose']['multiple'] = TRUE;
     }
 
-
     // If there are relationships in the view, allow empty should be true
     // so that we can do IS NULL checks on items. Not all filters respect
     // allow empty, but string and numeric do and that covers enough.
@@ -131,9 +132,11 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
         'required' => ['default' => FALSE],
         'remember' => ['default' => FALSE],
         'multiple' => ['default' => FALSE],
-        'remember_roles' => ['default' => [
-          RoleInterface::AUTHENTICATED_ID => RoleInterface::AUTHENTICATED_ID,
-        ]],
+        'remember_roles' => [
+          'default' => [
+            RoleInterface::AUTHENTICATED_ID => RoleInterface::AUTHENTICATED_ID,
+          ],
+        ],
       ],
     ];
 
@@ -174,7 +177,9 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
   /**
    * Determine if a filter can be exposed.
    */
-  public function canExpose() { return TRUE; }
+  public function canExpose() {
+    return TRUE;
+  }
 
   /**
    * Determine if a filter can be converted into a group.
@@ -302,18 +307,20 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
    * Provide a list of options for the default operator form.
    * Should be overridden by classes that don't override operatorForm
    */
-  public function operatorOptions() { return []; }
+  public function operatorOptions() {
+    return [];
+  }
 
   /**
    * Validate the operator form.
    */
-  protected function operatorValidate($form, FormStateInterface $form_state) { }
+  protected function operatorValidate($form, FormStateInterface $form_state) {}
 
   /**
    * Perform any necessary changes to the form values prior to storage.
    * There is no need for this function to actually store the data.
    */
-  public function operatorSubmit($form, FormStateInterface $form_state) { }
+  public function operatorSubmit($form, FormStateInterface $form_state) {}
 
   /**
    * Shortcut to display the value form.
@@ -341,13 +348,13 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
   /**
    * Validate the options form.
    */
-  protected function valueValidate($form, FormStateInterface $form_state) { }
+  protected function valueValidate($form, FormStateInterface $form_state) {}
 
   /**
    * Perform any necessary changes to the form values prior to storage.
    * There is no need for this function to actually store the data.
    */
-  protected function valueSubmit($form, FormStateInterface $form_state) { }
+  protected function valueSubmit($form, FormStateInterface $form_state) {}
 
   /**
    * Shortcut to display the exposed options form.
@@ -606,7 +613,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       '#default_value' => $this->options['expose']['identifier'],
       '#title' => $this->t('Filter identifier'),
       '#size' => 40,
-      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed. "q" is a reserved word and cannot be used.'),
+      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed.'),
     ];
   }
 
@@ -699,7 +706,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
     if (empty($identifier)) {
       $error = $this->t('The identifier is required if the filter is exposed.');
     }
-    elseif ($identifier == 'value'|| $identifier == 'q') {
+    elseif ($identifier == 'value') {
       $error = $this->t('This identifier is not allowed.');
     }
     elseif (preg_match('/[^a-zA-z0-9_~\.\-]/', $identifier)) {
@@ -904,7 +911,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       '#default_value' => $identifier,
       '#title' => $this->t('Filter identifier'),
       '#size' => 40,
-      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed. "q" is a reserved word and cannot be used.'),
+      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed.'),
     ];
     $form['group_info']['label'] = [
       '#type' => 'textfield',
@@ -958,7 +965,7 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       '#default_value' => $identifier,
       '#title' => $this->t('Filter identifier'),
       '#size' => 40,
-      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed. "q" is a reserved word and cannot be used.'),
+      '#description' => $this->t('This will appear in the URL after the ? to identify this filter. Cannot be blank. Only letters, digits and the dot ("."), hyphen ("-"), underscore ("_"), and tilde ("~") characters are allowed.'),
     ];
     $form['group_info']['label'] = [
       '#type' => 'textfield',
@@ -989,7 +996,9 @@ abstract class FilterPluginBase extends HandlerBase implements CacheableDependen
       '#default_value' => $this->options['group_info']['remember'],
     ];
 
-    $groups = ['All' => $this->t('- Any -')]; // The string '- Any -' will not be rendered see @theme_views_ui_build_group_filter_form
+    // The string '- Any -' will not be rendered.
+    // @see theme_views_ui_build_group_filter_form()
+    $groups = ['All' => $this->t('- Any -')];
 
     // Provide 3 options to start when we are in a new group.
     if (count($this->options['group_info']['group_items']) == 0) {
