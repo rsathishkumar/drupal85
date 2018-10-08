@@ -1034,7 +1034,7 @@
             // current row. This dropdown is the one associated with the current
             // row's filter group.
             const operatorValue = $draggableRow
-              .prevAll('.views-group-title')
+              .prevAll('.views-group-title:first')
               .find('option:selected')
               .html();
             const operatorLabel = `<span class="views-operator-label">${operatorValue}</span>`;
