@@ -2,8 +2,11 @@
 
 namespace Drupal\aggregator\Tests;
 
+@trigger_error(__NAMESPACE__ . '\AggregatorTestBase is deprecated for removal before Drupal 9.0.0. Use \Drupal\Tests\aggregator\Functional\AggregatorTestBase instead. See https://www.drupal.org/node/2999939', E_USER_DEPRECATED);
+
 use Drupal\aggregator\Entity\Feed;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Database\Database;
 use Drupal\simpletest\WebTestBase;
 use Drupal\aggregator\FeedInterface;
 
@@ -12,6 +15,8 @@ use Drupal\aggregator\FeedInterface;
  *
  * @deprecated Scheduled for removal in Drupal 9.0.0.
  *   Use \Drupal\Tests\aggregator\Functional\AggregatorTestBase instead.
+ *
+ * @see https://www.drupal.org/node/2999939
  */
 abstract class AggregatorTestBase extends WebTestBase {
 
@@ -150,7 +155,7 @@ abstract class AggregatorTestBase extends WebTestBase {
    */
   public function getDefaultFeedItemCount() {
     // Our tests are based off of rss.xml, so let's find out how many elements should be related.
-    $feed_count = db_query_range('SELECT COUNT(DISTINCT nid) FROM {node_field_data} n WHERE n.promote = 1 AND n.status = 1', 0, $this->config('system.rss')->get('items.limit'))->fetchField();
+    $feed_count = Database::getConnection()->queryRange('SELECT COUNT(DISTINCT nid) FROM {node_field_data} n WHERE n.promote = 1 AND n.status = 1', 0, $this->config('system.rss')->get('items.limit'))->fetchField();
     return $feed_count > 10 ? 10 : $feed_count;
   }
 

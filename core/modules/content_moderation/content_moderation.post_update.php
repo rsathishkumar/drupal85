@@ -5,6 +5,7 @@
  * Post update functions for the Content Moderation module.
  */
 
+use Drupal\Core\Config\Entity\ConfigEntityUpdater;
 use Drupal\Core\Site\Settings;
 use Drupal\workflows\Entity\Workflow;
 
@@ -20,6 +21,7 @@ function content_moderation_post_update_update_cms_default_revisions(&$sandbox) 
   $entity_type_id = &$sandbox['entity_type_id'];
   if (!isset($entity_type_id)) {
     $sandbox['bundles'] = [];
+    $sandbox['entity_type_ids'] = [];
     /** @var \Drupal\workflows\WorkflowInterface $workflow */
     foreach (Workflow::loadMultipleByType('content_moderation') as $workflow) {
       /** @var \Drupal\content_moderation\Plugin\WorkflowType\ContentModeration $plugin */
@@ -92,4 +94,19 @@ function content_moderation_post_update_update_cms_default_revisions(&$sandbox) 
   $storage->resetCache($entity_ids);
 
   $sandbox['offset'] += $sandbox['limit'];
+}
+
+/**
+ * Set the default moderation state for new content to 'draft'.
+ */
+function content_moderation_post_update_set_default_moderation_state(&$sandbox) {
+  \Drupal::classResolver(ConfigEntityUpdater::class)->update($sandbox, 'workflow', function (Workflow $workflow) {
+    if ($workflow->get('type') === 'content_moderation') {
+      $configuration = $workflow->getTypePlugin()->getConfiguration();
+      $configuration['default_moderation_state'] = 'draft';
+      $workflow->getTypePlugin()->setConfiguration($configuration);
+      return TRUE;
+    }
+    return FALSE;
+  });
 }

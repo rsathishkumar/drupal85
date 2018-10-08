@@ -28,7 +28,7 @@ class TestContextAwareBlock extends BlockBase {
     return [
       '#prefix' => '<div id="' . $this->getPluginId() . '--username">',
       '#suffix' => '</div>',
-      '#markup' => $user ? $user->getUsername() : 'No context mapping selected.' ,
+      '#markup' => $user ? $user->getAccountName() : 'No context mapping selected.' ,
     ];
   }
 
@@ -37,7 +37,7 @@ class TestContextAwareBlock extends BlockBase {
    */
   protected function blockAccess(AccountInterface $account) {
     if ($this->getContextValue('user') instanceof UserInterface) {
-      drupal_set_message('User context found.');
+      $this->messenger()->addStatus('User context found.');
     }
 
     return parent::blockAccess($account);

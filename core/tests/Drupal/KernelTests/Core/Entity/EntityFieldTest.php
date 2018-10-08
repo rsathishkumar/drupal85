@@ -16,6 +16,7 @@ use Drupal\Core\TypedData\DataDefinitionInterface;
 use Drupal\Core\TypedData\ListInterface;
 use Drupal\Core\TypedData\Type\StringInterface;
 use Drupal\Core\TypedData\TypedDataInterface;
+use Drupal\entity_test\Entity\EntityTest;
 use Drupal\entity_test\Entity\EntityTestComputedField;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -135,19 +136,19 @@ class EntityFieldTest extends EntityKernelTestBase {
     $this->assertTrue($entity->user_id[0] instanceof FieldItemInterface, format_string('%entity_type: Field item implements interface', ['%entity_type' => $entity_type]));
 
     $this->assertEqual($this->entityUser->id(), $entity->user_id->target_id, format_string('%entity_type: User id can be read.', ['%entity_type' => $entity_type]));
-    $this->assertEqual($this->entityUser->getUsername(), $entity->user_id->entity->name->value, format_string('%entity_type: User name can be read.', ['%entity_type' => $entity_type]));
+    $this->assertEqual($this->entityUser->getAccountName(), $entity->user_id->entity->name->value, format_string('%entity_type: User name can be read.', ['%entity_type' => $entity_type]));
 
     // Change the assigned user by entity.
     $new_user1 = $this->createUser();
     $entity->user_id->entity = $new_user1;
     $this->assertEqual($new_user1->id(), $entity->user_id->target_id, format_string('%entity_type: Updated user id can be read.', ['%entity_type' => $entity_type]));
-    $this->assertEqual($new_user1->getUsername(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated username value can be read.', ['%entity_type' => $entity_type]));
+    $this->assertEqual($new_user1->getAccountName(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated username value can be read.', ['%entity_type' => $entity_type]));
 
     // Change the assigned user by id.
     $new_user2 = $this->createUser();
     $entity->user_id->target_id = $new_user2->id();
     $this->assertEqual($new_user2->id(), $entity->user_id->target_id, format_string('%entity_type: Updated user id can be read.', ['%entity_type' => $entity_type]));
-    $this->assertEqual($new_user2->getUsername(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated username value can be read.', ['%entity_type' => $entity_type]));
+    $this->assertEqual($new_user2->getAccountName(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated username value can be read.', ['%entity_type' => $entity_type]));
 
     // Try unsetting a field property.
     $entity->name->value = NULL;
@@ -160,12 +161,12 @@ class EntityFieldTest extends EntityKernelTestBase {
     // Change the assigned user by entity.
     $entity->user_id->first()->get('entity')->setValue($new_user2);
     $this->assertEqual($new_user2->id(), $entity->user_id->target_id, format_string('%entity_type: Updated user id can be read.', ['%entity_type' => $entity_type]));
-    $this->assertEqual($new_user2->getUsername(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated user name value can be read.', ['%entity_type' => $entity_type]));
+    $this->assertEqual($new_user2->getAccountName(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated user name value can be read.', ['%entity_type' => $entity_type]));
 
     // Change the assigned user by id.
     $entity->user_id->first()->get('target_id')->setValue($new_user2->id());
     $this->assertEqual($new_user2->id(), $entity->user_id->target_id, format_string('%entity_type: Updated user id can be read.', ['%entity_type' => $entity_type]));
-    $this->assertEqual($new_user2->getUsername(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated user name value can be read.', ['%entity_type' => $entity_type]));
+    $this->assertEqual($new_user2->getAccountName(), $entity->user_id->entity->name->value, format_string('%entity_type: Updated user name value can be read.', ['%entity_type' => $entity_type]));
 
     // Try unsetting a field.
     $entity->name->first()->get('value')->setValue(NULL);
@@ -270,7 +271,7 @@ class EntityFieldTest extends EntityKernelTestBase {
       ]);
     $this->assertEqual($this->entityName, $entity->name->value, format_string('%entity_type: Name value can be read.', ['%entity_type' => $entity_type]));
     $this->assertEqual($this->entityUser->id(), $entity->user_id->target_id, format_string('%entity_type: User id can be read.', ['%entity_type' => $entity_type]));
-    $this->assertEqual($this->entityUser->getUsername(), $entity->user_id->entity->name->value, format_string('%entity_type: User name can be read.', ['%entity_type' => $entity_type]));
+    $this->assertEqual($this->entityUser->getAccountName(), $entity->user_id->entity->name->value, format_string('%entity_type: User name can be read.', ['%entity_type' => $entity_type]));
     $this->assertEqual($this->entityFieldText, $entity->field_test_text->value, format_string('%entity_type: Text field can be read.', ['%entity_type' => $entity_type]));
 
     // Tests copying field values by assigning the TypedData objects.
@@ -390,7 +391,7 @@ class EntityFieldTest extends EntityKernelTestBase {
     $this->assertEqual('en', $entity->{$langcode_key}->value, format_string('%entity_type: Language code can be read.', ['%entity_type' => $entity_type]));
     $this->assertEqual(\Drupal::languageManager()->getLanguage('en'), $entity->{$langcode_key}->language, format_string('%entity_type: Language object can be read.', ['%entity_type' => $entity_type]));
     $this->assertEqual($this->entityUser->id(), $entity->user_id->target_id, format_string('%entity_type: User id can be read.', ['%entity_type' => $entity_type]));
-    $this->assertEqual($this->entityUser->getUsername(), $entity->user_id->entity->name->value, format_string('%entity_type: User name can be read.', ['%entity_type' => $entity_type]));
+    $this->assertEqual($this->entityUser->getAccountName(), $entity->user_id->entity->name->value, format_string('%entity_type: User name can be read.', ['%entity_type' => $entity_type]));
     $this->assertEqual($this->entityFieldText, $entity->field_test_text->value, format_string('%entity_type: Text field can be read.', ['%entity_type' => $entity_type]));
   }
 
@@ -868,6 +869,32 @@ class EntityFieldTest extends EntityKernelTestBase {
 
     $computed_item_list2->value = 'foo computed 2';
     $this->assertFalse($computed_item_list1->equals($computed_item_list2));
+  }
+
+  /**
+   * Tests an entity reference computed field.
+   */
+  public function testEntityReferenceComputedField() {
+    $this->installEntitySchema('entity_test_computed_field');
+
+    // Create 2 entities to be referenced.
+    $ref1 = EntityTest::create(['name' => 'foo', 'type' => 'bar']);
+    $ref1->save();
+    $ref2 = EntityTest::create(['name' => 'baz', 'type' => 'bar']);
+    $ref2->save();
+    \Drupal::state()->set('entity_test_reference_computed_target_ids', [$ref1->id(), $ref2->id()]);
+
+    $entity = EntityTestComputedField::create([]);
+    $entity->save();
+
+    /** @var \Drupal\entity_test\Plugin\Field\ComputedReferenceTestFieldItemList $field */
+    $field = $entity->get('computed_reference_field');
+    /** @var \Drupal\Core\Entity\EntityInterface[] $referenced_entities */
+    $referenced_entities = $field->referencedEntities();
+
+    // Check that ::referencedEntities() is working with computed fields.
+    $this->assertEquals($ref1->id(), $referenced_entities[0]->id());
+    $this->assertEquals($ref2->id(), $referenced_entities[1]->id());
   }
 
   /**

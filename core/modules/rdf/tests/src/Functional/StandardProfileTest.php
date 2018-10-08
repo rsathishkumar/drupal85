@@ -136,7 +136,7 @@ class StandardProfileTest extends BrowserTestBase {
     $this->term->save();
 
     // Create image.
-    file_unmanaged_copy(\Drupal::root() . '/core/misc/druplicon.png', 'public://example.jpg');
+    file_unmanaged_copy($this->root . '/core/misc/druplicon.png', 'public://example.jpg');
     $this->image = File::create(['uri' => 'public://example.jpg']);
     $this->image->save();
 
@@ -477,7 +477,7 @@ class StandardProfileTest extends BrowserTestBase {
     // Comment author name.
     $expected_value = [
       'type' => 'literal',
-      'value' => $this->webUser->getUsername(),
+      'value' => $this->webUser->getAccountName(),
     ];
     $this->assertTrue($graph->hasProperty($this->commenterUri, 'http://schema.org/name', $expected_value), 'Comment author name was found (schema:name).');
   }

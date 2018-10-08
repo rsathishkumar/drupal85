@@ -2,15 +2,15 @@
 
 namespace Drupal\layout_builder\Plugin\SectionStorage;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Plugin\Context\Context;
-use Drupal\Core\Plugin\Context\ContextDefinition;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Plugin\Context\EntityContext;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\layout_builder\OverridesSectionStorageInterface;
@@ -30,7 +30,7 @@ use Symfony\Component\Routing\RouteCollection;
  *   experimental modules and development releases of contributed modules.
  *   See https://www.drupal.org/core/experimental for more information.
  */
-class OverridesSectionStorage extends SectionStorageBase implements ContainerFactoryPluginInterface, OverridesSectionStorageInterface {
+class OverridesSectionStorage extends SectionStorageBase implements ContainerFactoryPluginInterface, OverridesSectionStorageInterface, SectionStorageLocalTaskProviderInterface {
 
   /**
    * The entity type manager.
@@ -158,6 +158,45 @@ class OverridesSectionStorage extends SectionStorageBase implements ContainerFac
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function buildLocalTasks($base_plugin_definition) {
+    $local_tasks = [];
+    foreach ($this->getEntityTypes() as $entity_type_id => $entity_type) {
+      $local_tasks["layout_builder.overrides.$entity_type_id.view"] = $base_plugin_definition + [
+        'route_name' => "layout_builder.overrides.$entity_type_id.view",
+        'weight' => 15,
+        'title' => $this->t('Layout'),
+        'base_route' => "entity.$entity_type_id.canonical",
+        'cache_contexts' => ['layout_builder_is_active:' . $entity_type_id],
+      ];
+      $local_tasks["layout_builder.overrides.$entity_type_id.save"] = $base_plugin_definition + [
+        'route_name' => "layout_builder.overrides.$entity_type_id.save",
+        'title' => $this->t('Save Layout'),
+        'parent_id' => "layout_builder_ui:layout_builder.overrides.$entity_type_id.view",
+        'cache_contexts' => ['layout_builder_is_active:' . $entity_type_id],
+      ];
+      $local_tasks["layout_builder.overrides.$entity_type_id.cancel"] = $base_plugin_definition + [
+        'route_name' => "layout_builder.overrides.$entity_type_id.cancel",
+        'title' => $this->t('Cancel Layout'),
+        'parent_id' => "layout_builder_ui:layout_builder.overrides.$entity_type_id.view",
+        'weight' => 5,
+        'cache_contexts' => ['layout_builder_is_active:' . $entity_type_id],
+      ];
+      // @todo This link should be conditionally displayed, see
+      //   https://www.drupal.org/node/2917777.
+      $local_tasks["layout_builder.overrides.$entity_type_id.revert"] = $base_plugin_definition + [
+        'route_name' => "layout_builder.overrides.$entity_type_id.revert",
+        'title' => $this->t('Revert to defaults'),
+        'parent_id' => "layout_builder_ui:layout_builder.overrides.$entity_type_id.view",
+        'weight' => 10,
+        'cache_contexts' => ['layout_builder_is_active:' . $entity_type_id],
+      ];
+    }
+    return $local_tasks;
+  }
+
+  /**
    * Determines if this entity type's ID is stored as an integer.
    *
    * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
@@ -187,7 +226,9 @@ class OverridesSectionStorage extends SectionStorageBase implements ContainerFac
    * {@inheritdoc}
    */
   public function getDefaultSectionStorage() {
-    return LayoutBuilderEntityViewDisplay::collectRenderDisplay($this->getEntity(), 'default');
+    // @todo Expand to work for all view modes in
+    //   https://www.drupal.org/node/2907413.
+    return LayoutBuilderEntityViewDisplay::collectRenderDisplay($this->getEntity(), 'full');
   }
 
   /**
@@ -200,10 +241,10 @@ class OverridesSectionStorage extends SectionStorageBase implements ContainerFac
   /**
    * {@inheritdoc}
    */
-  public function getLayoutBuilderUrl() {
+  public function getLayoutBuilderUrl($rel = 'view') {
     $entity = $this->getEntity();
     $route_parameters[$entity->getEntityTypeId()] = $entity->id();
-    return Url::fromRoute("layout_builder.{$this->getStorageType()}.{$this->getEntity()->getEntityTypeId()}.view", $route_parameters);
+    return Url::fromRoute("layout_builder.{$this->getStorageType()}.{$this->getEntity()->getEntityTypeId()}.$rel", $route_parameters);
   }
 
   /**
@@ -211,9 +252,7 @@ class OverridesSectionStorage extends SectionStorageBase implements ContainerFac
    */
   public function getContexts() {
     $entity = $this->getEntity();
-    // @todo Use EntityContextDefinition after resolving
-    //   https://www.drupal.org/node/2932462.
-    $contexts['layout_builder.entity'] = new Context(new ContextDefinition("entity:{$entity->getEntityTypeId()}", new TranslatableMarkup('@entity being viewed', ['@entity' => $entity->getEntityType()->getLabel()])), $entity);
+    $contexts['layout_builder.entity'] = EntityContext::fromEntity($entity);
     return $contexts;
   }
 
@@ -229,6 +268,15 @@ class OverridesSectionStorage extends SectionStorageBase implements ContainerFac
    */
   public function save() {
     return $this->getEntity()->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access($operation, AccountInterface $account = NULL, $return_as_object = FALSE) {
+    $default_section_storage = $this->getDefaultSectionStorage();
+    $result = AccessResult::allowedIf($default_section_storage->isLayoutBuilderEnabled())->addCacheableDependency($default_section_storage);
+    return $return_as_object ? $result : $result->isAllowed();
   }
 
 }

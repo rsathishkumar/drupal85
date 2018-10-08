@@ -332,7 +332,8 @@ function locale_cron_fill_queue() {
   $projects = array_filter($projects, function ($project) {
     return $project['status'] == 1;
   });
-  $files = db_select('locale_file', 'f')
+  $connection = \Drupal::database();
+  $files = $connection->select('locale_file', 'f')
     ->condition('f.project', array_keys($projects), 'IN')
     ->condition('f.last_checked', $last, '<')
     ->fields('f', ['project', 'langcode'])
@@ -342,7 +343,7 @@ function locale_cron_fill_queue() {
 
     // Update the last_checked timestamp of the project+language that will
     // be checked for updates.
-    db_update('locale_file')
+    $connection->update('locale_file')
       ->fields(['last_checked' => REQUEST_TIME])
       ->condition('project', $file->project)
       ->condition('langcode', $file->langcode)

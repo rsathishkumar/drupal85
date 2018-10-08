@@ -8,6 +8,7 @@ use Drupal\FunctionalTests\Update\UpdatePathTestBase;
  * Tests that comment settings are properly updated during database updates.
  *
  * @group comment
+ * @group legacy
  */
 class CommentUpdateTest extends UpdatePathTestBase {
 
@@ -69,6 +70,24 @@ class CommentUpdateTest extends UpdatePathTestBase {
 
     // Check that the {comment_field_data} table status index has been created.
     $this->assertTrue(\Drupal::database()->schema()->indexExists('comment_field_data', 'comment__status_comment_type'));
+  }
+
+  /**
+   * Tests that the comment entity type has an 'owner' entity key.
+   *
+   * @see comment_update_8700()
+   */
+  public function testOwnerEntityKey() {
+    // Check that the 'owner' entity key does not exist prior to the update.
+    $entity_type = \Drupal::entityDefinitionUpdateManager()->getEntityType('comment');
+    $this->assertFalse($entity_type->getKey('owner'));
+
+    // Run updates.
+    $this->runUpdates();
+
+    // Check that the entity key exists and it has the correct value.
+    $entity_type = \Drupal::entityDefinitionUpdateManager()->getEntityType('comment');
+    $this->assertEquals('uid', $entity_type->getKey('owner'));
   }
 
 }

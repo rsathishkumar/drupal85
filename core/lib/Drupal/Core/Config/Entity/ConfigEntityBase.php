@@ -10,6 +10,7 @@ use Drupal\Core\Config\ConfigDuplicateUUIDException;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
+use Drupal\Core\Entity\SynchronizableEntityTrait;
 use Drupal\Core\Plugin\PluginDependencyTrait;
 
 /**
@@ -22,6 +23,7 @@ abstract class ConfigEntityBase extends Entity implements ConfigEntityInterface 
   use PluginDependencyTrait {
     addDependency as addDependencyTrait;
   }
+  use SynchronizableEntityTrait;
 
   /**
    * The original ID of the configuration entity.
@@ -47,14 +49,6 @@ abstract class ConfigEntityBase extends Entity implements ConfigEntityInterface 
    * @var string
    */
   protected $uuid;
-
-  /**
-   * Whether the config is being created, updated or deleted through the
-   * import process.
-   *
-   * @var bool
-   */
-  private $isSyncing = FALSE;
 
   /**
    * Whether the config is being deleted by the uninstall process.
@@ -207,22 +201,6 @@ abstract class ConfigEntityBase extends Entity implements ConfigEntityInterface 
   /**
    * {@inheritdoc}
    */
-  public function setSyncing($syncing) {
-    $this->isSyncing = $syncing;
-
-    return $this;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isSyncing() {
-    return $this->isSyncing;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function setUninstalling($uninstalling) {
     $this->isUninstalling = $uninstalling;
   }
@@ -267,18 +245,13 @@ abstract class ConfigEntityBase extends Entity implements ConfigEntityInterface 
     /** @var \Drupal\Core\Config\Entity\ConfigEntityTypeInterface $entity_type */
     $entity_type = $this->getEntityType();
 
-    $properties_to_export = $entity_type->getPropertiesToExport();
-    if (empty($properties_to_export)) {
-      $config_name = $entity_type->getConfigPrefix() . '.' . $this->id();
-      $definition = $this->getTypedConfig()->getDefinition($config_name);
-      if (!isset($definition['mapping'])) {
-        throw new SchemaIncompleteException("Incomplete or missing schema for $config_name");
-      }
-      $properties_to_export = array_combine(array_keys($definition['mapping']), array_keys($definition['mapping']));
-    }
-
     $id_key = $entity_type->getKey('id');
-    foreach ($properties_to_export as $property_name => $export_name) {
+    $property_names = $entity_type->getPropertiesToExport($this->id());
+    if (empty($property_names)) {
+      $config_name = $entity_type->getConfigPrefix() . '.' . $this->id();
+      throw new SchemaIncompleteException("Incomplete or missing schema for $config_name");
+    }
+    foreach ($property_names as $property_name => $export_name) {
       // Special handling for IDs so that computed compound IDs work.
       // @see \Drupal\Core\Entity\EntityDisplayBase::id()
       if ($property_name == $id_key) {

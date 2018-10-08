@@ -97,7 +97,7 @@ class RouteProviderTest extends KernelTestBase {
   public function register(ContainerBuilder $container) {
     parent::register($container);
 
-    // Readd the incoming path alias for these tests.
+    // Read the incoming path alias for these tests.
     if ($container->hasDefinition('path_processor_alias')) {
       $definition = $container->getDefinition('path_processor_alias');
       $definition->addTag('path_processor_inbound');
@@ -223,7 +223,7 @@ class RouteProviderTest extends KernelTestBase {
    */
   public function testMixedCasePaths($path, $expected_route_name, $method = 'GET') {
     // The case-insensitive behavior for higher UTF-8 characters depends on
-    // \Drupal\Component\Utility\Unicode::strtolower() using mb_strtolower()
+    // mb_strtolower() using mb_strtolower()
     // but kernel tests do not currently run the check that enables it.
     // @todo remove this when https://www.drupal.org/node/2849669 is fixed.
     Unicode::check();
@@ -274,7 +274,7 @@ class RouteProviderTest extends KernelTestBase {
   public function testDuplicateRoutePaths($path, $number, $expected_route_name = NULL) {
 
     // The case-insensitive behavior for higher UTF-8 characters depends on
-    // \Drupal\Component\Utility\Unicode::strtolower() using mb_strtolower()
+    // mb_strtolower() using mb_strtolower()
     // but kernel tests do not currently run the check that enables it.
     // @todo remove this when https://www.drupal.org/node/2849669 is fixed.
     Unicode::check();

@@ -99,7 +99,7 @@ class CommentTranslationUITest extends ContentTranslationUITestBase {
     $node = $this->drupalCreateNode([
       'type' => $node_type,
       $field_name => [
-        ['status' => CommentItemInterface::OPEN]
+        ['status' => CommentItemInterface::OPEN],
       ],
     ]);
     $values['entity_id'] = $node->id();
@@ -163,7 +163,7 @@ class CommentTranslationUITest extends ContentTranslationUITestBase {
         'created' => REQUEST_TIME - mt_rand(0, 1000),
       ];
       $edit = [
-        'uid' => $user->getUsername() . ' (' . $user->id() . ')',
+        'uid' => $user->getAccountName() . ' (' . $user->id() . ')',
         'date[date]' => format_date($values[$langcode]['created'], 'custom', 'Y-m-d'),
         'date[time]' => format_date($values[$langcode]['created'], 'custom', 'H:i:s'),
       ];

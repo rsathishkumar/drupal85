@@ -590,7 +590,7 @@ use Drupal\node\Entity\NodeType;
  * // rules will be used.
  * $build = $view_builder->view($entity, 'view_mode_name', $language->getId());
  * // $build is a render array.
- * $rendered = drupal_render($build);
+ * $rendered = \Drupal::service('renderer')->render($build);
  * @endcode
  *
  * @section sec_access Access checking on entities
@@ -910,6 +910,54 @@ function hook_ENTITY_TYPE_create(\Drupal\Core\Entity\EntityInterface $entity) {
 }
 
 /**
+ * Respond to entity revision creation.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $new_revision
+ *   The new revision that was created.
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The original entity that was used to create the revision from.
+ * @param bool|null $keep_untranslatable_fields
+ *   Whether untranslatable field values were kept (TRUE) or copied from the
+ *   default revision (FALSE) when generating a merged revision. If no value was
+ *   explicitly specified (NULL), a default value of TRUE should be assumed if
+ *   the provided entity is the default translation and untranslatable fields
+ *   should only affect the default translation, FALSE otherwise.
+ *
+ * @ingroup entity_crud
+ * @see \Drupal\Core\Entity\RevisionableStorageInterface::createRevision()
+ * @see \Drupal\Core\Entity\TranslatableRevisionableStorageInterface::createRevision()
+ */
+function hook_entity_revision_create(Drupal\Core\Entity\EntityInterface $new_revision, Drupal\Core\Entity\EntityInterface $entity, $keep_untranslatable_fields) {
+  // Retain the value from an untranslatable field, which are by default
+  // synchronized from the default revision.
+  $new_revision->set('untranslatable_field', $entity->get('untranslatable_field'));
+}
+
+/**
+ * Respond to entity revision creation.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $new_revision
+ *   The new revision that was created.
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The original entity that was used to create the revision from.
+ * @param bool|null $keep_untranslatable_fields
+ *   Whether untranslatable field values were kept (TRUE) or copied from the
+ *   default revision (FALSE) when generating a merged revision. If no value was
+ *   explicitly specified (NULL), a default value of TRUE should be assumed if
+ *   the provided entity is the default translation and untranslatable fields
+ *   should only affect the default translation, FALSE otherwise.
+ *
+ * @ingroup entity_crud
+ * @see \Drupal\Core\Entity\RevisionableStorageInterface::createRevision()
+ * @see \Drupal\Core\Entity\TranslatableRevisionableStorageInterface::createRevision()
+ */
+function hook_ENTITY_TYPE_revision_create(Drupal\Core\Entity\EntityInterface $new_revision, Drupal\Core\Entity\EntityInterface $entity, $keep_untranslatable_fields) {
+  // Retain the value from an untranslatable field, which are by default
+  // synchronized from the default revision.
+  $new_revision->set('untranslatable_field', $entity->get('untranslatable_field'));
+}
+
+/**
  * Act on entities when loaded.
  *
  * This is a generic load hook called for all entity types loaded via the
@@ -1033,7 +1081,7 @@ function hook_ENTITY_TYPE_presave(Drupal\Core\Entity\EntityInterface $entity) {
  */
 function hook_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
   // Insert the new entity into a fictional table of all entities.
-  db_insert('example_entity')
+  \Drupal::database()->insert('example_entity')
     ->fields([
       'type' => $entity->getEntityTypeId(),
       'id' => $entity->id(),
@@ -1057,7 +1105,7 @@ function hook_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
  */
 function hook_ENTITY_TYPE_insert(Drupal\Core\Entity\EntityInterface $entity) {
   // Insert the new entity into a fictional table of this type of entity.
-  db_insert('example_entity')
+  \Drupal::database()->insert('example_entity')
     ->fields([
       'id' => $entity->id(),
       'created' => REQUEST_TIME,
@@ -1081,7 +1129,7 @@ function hook_ENTITY_TYPE_insert(Drupal\Core\Entity\EntityInterface $entity) {
  */
 function hook_entity_update(Drupal\Core\Entity\EntityInterface $entity) {
   // Update the entity's entry in a fictional table of all entities.
-  db_update('example_entity')
+  \Drupal::database()->update('example_entity')
     ->fields([
       'updated' => REQUEST_TIME,
     ])
@@ -1105,7 +1153,7 @@ function hook_entity_update(Drupal\Core\Entity\EntityInterface $entity) {
  */
 function hook_ENTITY_TYPE_update(Drupal\Core\Entity\EntityInterface $entity) {
   // Update the entity's entry in a fictional table of this type of entity.
-  db_update('example_entity')
+  \Drupal::database()->update('example_entity')
     ->fields([
       'updated' => REQUEST_TIME,
     ])
@@ -1233,11 +1281,12 @@ function hook_ENTITY_TYPE_translation_delete(\Drupal\Core\Entity\EntityInterface
  * @see hook_ENTITY_TYPE_predelete()
  */
 function hook_entity_predelete(Drupal\Core\Entity\EntityInterface $entity) {
+  $connection = \Drupal::database();
   // Count references to this entity in a custom table before they are removed
   // upon entity deletion.
   $id = $entity->id();
   $type = $entity->getEntityTypeId();
-  $count = db_select('example_entity_data')
+  $count = \Drupal::database()->select('example_entity_data')
     ->condition('type', $type)
     ->condition('id', $id)
     ->countQuery()
@@ -1245,7 +1294,7 @@ function hook_entity_predelete(Drupal\Core\Entity\EntityInterface $entity) {
     ->fetchField();
 
   // Log the count in a table that records this statistic for deleted entities.
-  db_merge('example_deleted_entity_statistics')
+  $connection->merge('example_deleted_entity_statistics')
     ->key(['type' => $type, 'id' => $id])
     ->fields(['count' => $count])
     ->execute();
@@ -1261,11 +1310,12 @@ function hook_entity_predelete(Drupal\Core\Entity\EntityInterface $entity) {
  * @see hook_entity_predelete()
  */
 function hook_ENTITY_TYPE_predelete(Drupal\Core\Entity\EntityInterface $entity) {
+  $connection = \Drupal::database();
   // Count references to this entity in a custom table before they are removed
   // upon entity deletion.
   $id = $entity->id();
   $type = $entity->getEntityTypeId();
-  $count = db_select('example_entity_data')
+  $count = \Drupal::database()->select('example_entity_data')
     ->condition('type', $type)
     ->condition('id', $id)
     ->countQuery()
@@ -1273,7 +1323,7 @@ function hook_ENTITY_TYPE_predelete(Drupal\Core\Entity\EntityInterface $entity) 
     ->fetchField();
 
   // Log the count in a table that records this statistic for deleted entities.
-  db_merge('example_deleted_entity_statistics')
+  $connection->merge('example_deleted_entity_statistics')
     ->key(['type' => $type, 'id' => $id])
     ->fields(['count' => $count])
     ->execute();
@@ -1292,7 +1342,7 @@ function hook_ENTITY_TYPE_predelete(Drupal\Core\Entity\EntityInterface $entity) 
  */
 function hook_entity_delete(Drupal\Core\Entity\EntityInterface $entity) {
   // Delete the entity's entry from a fictional table of all entities.
-  db_delete('example_entity')
+  \Drupal::database()->delete('example_entity')
     ->condition('type', $entity->getEntityTypeId())
     ->condition('id', $entity->id())
     ->execute();
@@ -1311,7 +1361,7 @@ function hook_entity_delete(Drupal\Core\Entity\EntityInterface $entity) {
  */
 function hook_ENTITY_TYPE_delete(Drupal\Core\Entity\EntityInterface $entity) {
   // Delete the entity's entry from a fictional table of all entities.
-  db_delete('example_entity')
+  \Drupal::database()->delete('example_entity')
     ->condition('type', $entity->getEntityTypeId())
     ->condition('id', $entity->id())
     ->execute();
@@ -1359,7 +1409,8 @@ function hook_ENTITY_TYPE_revision_delete(Drupal\Core\Entity\EntityInterface $en
  * @param &$build
  *   A renderable array representing the entity content. The module may add
  *   elements to $build prior to rendering. The structure of $build is a
- *   renderable array as expected by drupal_render().
+ *   renderable array as expected by
+ *   \Drupal\Core\Render\RendererInterface::render().
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity object.
  * @param \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display
@@ -1391,7 +1442,8 @@ function hook_entity_view(array &$build, \Drupal\Core\Entity\EntityInterface $en
  * @param &$build
  *   A renderable array representing the entity content. The module may add
  *   elements to $build prior to rendering. The structure of $build is a
- *   renderable array as expected by drupal_render().
+ *   renderable array as expected by
+ *   \Drupal\Core\Render\RendererInterface::render().
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity object.
  * @param \Drupal\Core\Entity\Display\EntityViewDisplayInterface $display
@@ -1569,7 +1621,7 @@ function hook_entity_view_mode_alter(&$view_mode, Drupal\Core\Entity\EntityInter
  * @param string $view_mode
  *   The view_mode that is to be used to display the entity.
  *
- * @see drupal_render()
+ * @see \Drupal\Core\Render\RendererInterface::render()
  * @see \Drupal\Core\Entity\EntityViewBuilder
  * @see hook_entity_build_defaults_alter()
  *
@@ -1593,7 +1645,7 @@ function hook_ENTITY_TYPE_build_defaults_alter(array &$build, \Drupal\Core\Entit
  * @param string $view_mode
  *   The view_mode that is to be used to display the entity.
  *
- * @see drupal_render()
+ * @see \Drupal\Core\Render\RendererInterface::render()
  * @see \Drupal\Core\Entity\EntityViewBuilder
  * @see hook_ENTITY_TYPE_build_defaults_alter()
  *
@@ -1953,8 +2005,9 @@ function hook_entity_operation_alter(array &$operations, \Drupal\Core\Entity\Ent
  * @param \Drupal\Core\Session\AccountInterface $account
  *   The user account to check.
  * @param \Drupal\Core\Field\FieldItemListInterface $items
- *   (optional) The entity field object on which the operation is to be
- *   performed.
+ *   (optional) The entity field object for which to check access, or NULL if
+ *   access is checked for the field definition, without any specific value
+ *   available. Defaults to NULL.
  *
  * @return \Drupal\Core\Access\AccessResultInterface
  *   The access result.

@@ -189,7 +189,7 @@ class PageCacheTest extends BrowserTestBase {
     // Fill the cache.
     $this->drupalGet('');
     // Verify the page is not printed twice when the cache is cold.
-    $this->assertNoPattern('#<html.*<html#');
+    $this->assertSession()->responseNotMatches('#<html.*<html#');
 
     $this->drupalGet('');
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'HIT', 'Page was cached.');
@@ -213,7 +213,7 @@ class PageCacheTest extends BrowserTestBase {
 
     $this->drupalGet('', [], ['If-Modified-Since' => $last_modified, 'If-None-Match' => NULL]);
     // Verify the page is not printed twice when the cache is warm.
-    $this->assertNoPattern('#<html.*<html#');
+    $this->assertSession()->responseNotMatches('#<html.*<html#');
     $this->assertResponse(200, 'Conditional request without If-None-Match returned 200 OK.');
     $this->assertEqual($this->drupalGetHeader('X-Drupal-Cache'), 'HIT', 'Page was cached.');
 
@@ -327,20 +327,20 @@ class PageCacheTest extends BrowserTestBase {
     $this->drupalGet($content_url);
     $this->assertText('Permission to pet llamas: no!');
     $this->assertCacheContext('user.permissions');
-    $this->assertNoCacheTag('config:user.role.authenticated');
+    $this->assertSession()->responseHeaderNotContains('X-Drupal-Cache-Tags', 'config:user.role.authenticated');
     $this->drupalGet($route_access_url);
     $this->assertCacheContext('user.permissions');
-    $this->assertNoCacheTag('config:user.role.authenticated');
+    $this->assertSession()->responseHeaderNotContains('X-Drupal-Cache-Tags', 'config:user.role.authenticated');
 
     // 4. authenticated user, with permission.
     user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, ['pet llamas']);
     $this->drupalGet($content_url);
     $this->assertText('Permission to pet llamas: yes!');
     $this->assertCacheContext('user.permissions');
-    $this->assertNoCacheTag('config:user.role.authenticated');
+    $this->assertSession()->responseHeaderNotContains('X-Drupal-Cache-Tags', 'config:user.role.authenticated');
     $this->drupalGet($route_access_url);
     $this->assertCacheContext('user.permissions');
-    $this->assertNoCacheTag('config:user.role.authenticated');
+    $this->assertSession()->responseHeaderNotContains('X-Drupal-Cache-Tags', 'config:user.role.authenticated');
   }
 
   /**
@@ -370,7 +370,7 @@ class PageCacheTest extends BrowserTestBase {
           0 => [
             'value' => $this->randomString(),
             'format' => 'plain_text',
-          ]
+          ],
         ],
       ];
       $entity = EntityTest::create($entity_values);

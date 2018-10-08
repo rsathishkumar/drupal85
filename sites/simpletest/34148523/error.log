@@ -1,7 +1,0 @@
-[05-Sep-2017 17:59:09 Australia/Sydney] PHP Fatal error:  Call to a member function label() on null in /private/var/www/drupal8_5/core/modules/menu_ui/src/Tests/MenuTest.php on line 801
-[05-Sep-2017 17:59:09 Australia/Sydney] PHP Stack trace:
-[05-Sep-2017 17:59:09 Australia/Sydney] PHP   1. {main}() /private/var/www/drupal8_5/core/scripts/run-tests.sh:0
-[05-Sep-2017 17:59:09 Australia/Sydney] PHP   2. simpletest_script_run_one_test() /private/var/www/drupal8_5/core/scripts/run-tests.sh:67
-[05-Sep-2017 17:59:09 Australia/Sydney] PHP   3. Drupal\simpletest\TestBase->run() /private/var/www/drupal8_5/core/scripts/run-tests.sh:793
-[05-Sep-2017 17:59:09 Australia/Sydney] PHP   4. Drupal\menu_ui\Tests\MenuTest->testMenu() /private/var/www/drupal8_5/core/modules/simpletest/src/TestBase.php:960
-[05-Sep-2017 17:59:09 Australia/Sydney] PHP   5. Drupal\menu_ui\Tests\MenuTest->verifyMenuLink() /private/var/www/drupal8_5/core/modules/menu_ui/src/Tests/MenuTest.php:108

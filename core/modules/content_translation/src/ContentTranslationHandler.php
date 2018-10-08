@@ -512,10 +512,6 @@ class ContentTranslationHandler implements ContentTranslationHandlerInterface, E
         '#default_value' => $new_translation || !$date ? '' : format_date($date, 'custom', 'Y-m-d H:i:s O'),
       ];
 
-      if (isset($language_widget)) {
-        $language_widget['#multilingual'] = TRUE;
-      }
-
       $form['#process'][] = [$this, 'entityFormSharedElements'];
     }
 
@@ -684,7 +680,7 @@ class ContentTranslationHandler implements ContentTranslationHandlerInterface, E
       $translation = $form_state->getValue('content_translation');
       // Validate the "authored by" field.
       if (!empty($translation['uid']) && !($account = User::load($translation['uid']))) {
-        $form_state->setErrorByName('content_translation][uid', t('The translation authoring username %name does not exist.', ['%name' => $account->getUsername()]));
+        $form_state->setErrorByName('content_translation][uid', t('The translation authoring username %name does not exist.', ['%name' => $account->getAccountName()]));
       }
       // Validate the "authored on" field.
       if (!empty($translation['created']) && strtotime($translation['created']) === FALSE) {
@@ -734,7 +730,7 @@ class ContentTranslationHandler implements ContentTranslationHandlerInterface, E
       'target' => $form_object->getFormLangcode($form_state),
     ]);
     $languages = $this->languageManager->getLanguages();
-    drupal_set_message(t('Source language set to: %language', ['%language' => $languages[$source]->getName()]));
+    $this->messenger->addStatus(t('Source language set to: %language', ['%language' => $languages[$source]->getName()]));
   }
 
   /**
@@ -743,10 +739,10 @@ class ContentTranslationHandler implements ContentTranslationHandlerInterface, E
    * Takes care of entity deletion.
    */
   public function entityFormDelete($form, FormStateInterface $form_state) {
-    $form_object = $form_state->getFormObject()->getEntity();
+    $form_object = $form_state->getFormObject();
     $entity = $form_object->getEntity();
     if (count($entity->getTranslationLanguages()) > 1) {
-      drupal_set_message(t('This will delete all the translations of %label.', ['%label' => $entity->label()]), 'warning');
+      $this->messenger->addWarning(t('This will delete all the translations of %label.', ['%label' => $entity->label()]));
     }
   }
 

@@ -14,10 +14,10 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Render\HtmlResponseAttachmentsProcessor;
 use Drupal\Core\Render\Element\Link;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\Core\PhpStorage\PhpStorageFactory;
 use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
@@ -47,7 +47,7 @@ use Drupal\Core\Render\Element;
  *
  * Correct:
  * @code
- *   $my_substring = Unicode::substr($original_string, 0, 5);
+ *   $my_substring = mb_substr($original_string, 0, 5);
  * @endcode
  *
  * @}
@@ -215,7 +215,7 @@ function valid_email_address($mail) {
  * @deprecated in Drupal 8.0.x-dev, will be removed before Drupal 9.0.0.
  *   Use UrlHelper::stripDangerousProtocols() or UrlHelper::filterBadProtocol()
  *   instead. UrlHelper::stripDangerousProtocols() can be used in conjunction
- *   with \Drupal\Component\Utility\SafeMarkup::format() and an @variable
+ *   with \Drupal\Component\Render\FormattableMarkup and an @variable
  *   placeholder which will perform the necessary escaping.
  *   UrlHelper::filterBadProtocol() is functionality equivalent to check_url()
  *   apart from the fact it is protected from double escaping bugs. Note that
@@ -351,21 +351,22 @@ function date_iso8601($date) {
 /**
  * Formats an attribute string for an HTTP header.
  *
- * @param $attributes
+ * @param array $attributes
  *   An associative array of attributes such as 'rel'.
  *
- * @return
+ * @return string
  *   A ; separated string ready for insertion in a HTTP header. No escaping is
  *   performed for HTML entities, so this string is not safe to be printed.
+ *
+ * @deprecated in Drupal 8.7.0 and will be removed before Drupal 9.0.0. Use
+ *   \Drupal\Core\Render\HtmlResponseAttachmentsProcessor::formatHttpHeaderAttributes()
+ *   instead.
+ *
+ * @see https://www.drupal.org/node/3000051
  */
 function drupal_http_header_attributes(array $attributes = []) {
-  foreach ($attributes as $attribute => &$data) {
-    if (is_array($data)) {
-      $data = implode(' ', $data);
-    }
-    $data = $attribute . '="' . $data . '"';
-  }
-  return $attributes ? ' ' . implode('; ', $attributes) : '';
+  @trigger_error("drupal_http_header_attributes() is deprecated nn Drupal 8.7.0 and will be removed before Drupal 9.0.0. Use \Drupal\Core\Render\HtmlResponseAttachmentsProcessor::formatHttpHeaderAttributes() instead. See https://www.drupal.org/node/3000051", E_USER_DEPRECATED);
+  return HtmlResponseAttachmentsProcessor::formatHttpHeaderAttributes($attributes);
 }
 
 /**
@@ -409,8 +410,8 @@ function drupal_set_time_limit($time_limit) {
 /**
  * Returns the base URL path (i.e., directory) of the Drupal installation.
  *
- * base_path() adds a "/" to the beginning and end of the returned path if the
- * path is not empty. At the very least, this will return "/".
+ * Function base_path() adds a "/" to the beginning and end of the returned path
+ * if the path is not empty. At the very least, this will return "/".
  *
  * Examples:
  * - http://example.com returns "/" because the path is empty.
@@ -608,7 +609,7 @@ function drupal_process_states(&$elements) {
  *     'id' => 'my-module-table',
  *   ),
  * );
- * return drupal_render($table);
+ * return \Drupal::service('renderer')->render($table);
  * @endcode
  *
  * In the theme function for the form, a special class must be added to each
@@ -716,7 +717,7 @@ function drupal_attach_tabledrag(&$element, array $options) {
     'subgroup' => NULL,
     'source' => NULL,
     'hidden' => TRUE,
-    'limit' => 0
+    'limit' => 0,
   ];
 
   $group = $options['group'];
@@ -899,7 +900,7 @@ function drupal_render(&$elements, $is_recursive_call = FALSE) {
  *   rendering when possible or loop through the elements and render them as
  *   they are available.
  *
- * @see drupal_render()
+ * @see \Drupal\Core\Render\RendererInterface::render()
  * @see https://www.drupal.org/node/2912757
  */
 function drupal_render_children(&$element, $children_keys = NULL) {
@@ -1117,7 +1118,7 @@ function drupal_flush_all_caches() {
   \Drupal::service('kernel')->invalidateContainer();
 
   // Wipe the Twig PHP Storage cache.
-  PhpStorageFactory::get('twig')->deleteAll();
+  \Drupal::service('twig')->invalidate();
 
   // Rebuild module and theme data.
   $module_data = system_rebuild_module_data();

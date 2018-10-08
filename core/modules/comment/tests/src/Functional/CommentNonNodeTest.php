@@ -10,9 +10,9 @@ use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\entity_test\Entity\EntityTest;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\field_ui\Tests\FieldUiTestTrait;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Tests\field_ui\Traits\FieldUiTestTrait;
 use Drupal\user\RoleInterface;
 
 /**
@@ -190,7 +190,7 @@ class CommentNonNodeTest extends BrowserTestBase {
       $regex .= $comment->comment_body->value . '(.*?)';
       $regex .= '/s';
 
-      return (boolean) preg_match($regex, $this->getRawContent());
+      return (boolean) preg_match($regex, $this->getSession()->getPage()->getContent());
     }
     else {
       return FALSE;
@@ -204,7 +204,7 @@ class CommentNonNodeTest extends BrowserTestBase {
    *   Contact info is available.
    */
   public function commentContactInfoAvailable() {
-    return preg_match('/(input).*?(name="name").*?(input).*?(name="mail").*?(input).*?(name="homepage")/s', $this->getRawContent());
+    return preg_match('/(input).*?(name="name").*?(input).*?(name="mail").*?(input).*?(name="homepage")/s', $this->getSession()->getPage()->getContent());
   }
 
   /**
@@ -243,7 +243,7 @@ class CommentNonNodeTest extends BrowserTestBase {
    */
   public function getUnapprovedComment($subject) {
     $this->drupalGet('admin/content/comment/approval');
-    preg_match('/href="(.*?)#comment-([^"]+)"(.*?)>(' . $subject . ')/', $this->getRawContent(), $match);
+    preg_match('/href="(.*?)#comment-([^"]+)"(.*?)>(' . $subject . ')/', $this->getSession()->getPage()->getContent(), $match);
 
     return $match[2];
   }
@@ -253,7 +253,7 @@ class CommentNonNodeTest extends BrowserTestBase {
    */
   public function testCommentFunctionality() {
     $limited_user = $this->drupalCreateUser([
-      'administer entity_test fields'
+      'administer entity_test fields',
     ]);
     $this->drupalLogin($limited_user);
     // Test that default field exists.
@@ -341,7 +341,7 @@ class CommentNonNodeTest extends BrowserTestBase {
 
     // Attempt to view comments while disallowed.
     $this->drupalGet('entity-test/' . $this->entity->id());
-    $this->assertNoPattern('@<h2[^>]*>Comments</h2>@', 'Comments were not displayed.');
+    $this->assertSession()->responseNotMatches('@<h2[^>]*>Comments</h2>@', 'Comments were not displayed.');
     $this->assertNoLink('Add new comment', 'Link to add comment was found.');
 
     // Attempt to view test entity comment form while disallowed.
@@ -373,7 +373,7 @@ class CommentNonNodeTest extends BrowserTestBase {
       'view test entity' => TRUE,
     ]);
     $this->drupalGet('entity_test/' . $this->entity->id());
-    $this->assertNoPattern('@<h2[^>]*>Comments</h2>@', 'Comments were not displayed.');
+    $this->assertSession()->responseNotMatches('@<h2[^>]*>Comments</h2>@', 'Comments were not displayed.');
     $this->assertFieldByName('subject[0][value]', '', 'Subject field found.');
     $this->assertFieldByName('comment_body[0][value]', '', 'Comment field found.');
 

@@ -2,6 +2,8 @@
 
 namespace Drupal\content_translation\Tests;
 
+@trigger_error(__NAMESPACE__ . '\ContentTranslationUITestBase is deprecated for removal before Drupal 9.0.0. Use Drupal\Tests\content_translation\Functional\ContentTranslationUITestBase instead. See https://www.drupal.org/node/2999939', E_USER_DEPRECATED);
+
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -9,7 +11,7 @@ use Drupal\Core\Language\Language;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Url;
 use Drupal\language\Entity\ConfigurableLanguage;
-use Drupal\Component\Utility\SafeMarkup;
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\system\Tests\Cache\AssertPageCacheContextsAndTagsTrait;
 
 /**
@@ -17,6 +19,8 @@ use Drupal\system\Tests\Cache\AssertPageCacheContextsAndTagsTrait;
  *
  * @deprecated Scheduled for removal in Drupal 9.0.0.
  *   Use \Drupal\Tests\content_translation\Functional\ContentTranslationUITestBase instead.
+ *
+ * @see https://www.drupal.org/node/2999939
  */
 abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
 
@@ -37,8 +41,7 @@ abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
   protected $testLanguageSelector = TRUE;
 
   /**
-   * Flag that tells whether the HTML escaping of all languages works or not
-   * after SafeMarkup change.
+   * Flag to determine if "all languages" rendering is tested.
    *
    * @var bool
    */
@@ -113,12 +116,11 @@ abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
     $add_url = Url::fromRoute("entity.$entity_type_id.content_translation_add", [
       $entity->getEntityTypeId() => $entity->id(),
       'source' => $default_langcode,
-      'target' => $langcode
+      'target' => $langcode,
     ], ['language' => $language]);
     $this->drupalPostForm($add_url, $this->getEditValues($values, $langcode), $this->getFormSubmitActionForNewTranslation($entity, $langcode));
 
-    // Assert that HTML is escaped in "all languages" in UI after SafeMarkup
-    // change.
+    // Assert that HTML is not escaped unexpectedly.
     if ($this->testHTMLEscapeForAllLanguages) {
       $this->assertNoRaw('&lt;span class=&quot;translation-entity-all-languages&quot;&gt;(all languages)&lt;/span&gt;');
       $this->assertRaw('<span class="translation-entity-all-languages">(all languages)</span>');
@@ -141,10 +143,10 @@ abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
     $author_field_name = $entity->hasField('content_translation_uid') ? 'content_translation_uid' : 'uid';
     if ($entity->getFieldDefinition($author_field_name)->isTranslatable()) {
       $this->assertEqual($metadata_target_translation->getAuthor()->id(), $this->translator->id(),
-        SafeMarkup::format('Author of the target translation @langcode correctly stored for translatable owner field.', ['@langcode' => $langcode]));
+        new FormattableMarkup('Author of the target translation @langcode correctly stored for translatable owner field.', ['@langcode' => $langcode]));
 
       $this->assertNotEqual($metadata_target_translation->getAuthor()->id(), $metadata_source_translation->getAuthor()->id(),
-        SafeMarkup::format('Author of the target translation @target different from the author of the source translation @source for translatable owner field.',
+        new FormattableMarkup('Author of the target translation @target different from the author of the source translation @source for translatable owner field.',
           ['@target' => $langcode, '@source' => $default_langcode]));
     }
     else {
@@ -154,7 +156,7 @@ abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
     $created_field_name = $entity->hasField('content_translation_created') ? 'content_translation_created' : 'created';
     if ($entity->getFieldDefinition($created_field_name)->isTranslatable()) {
       $this->assertTrue($metadata_target_translation->getCreatedTime() > $metadata_source_translation->getCreatedTime(),
-        SafeMarkup::format('Translation creation timestamp of the target translation @target is newer than the creation timestamp of the source translation @source for translatable created field.',
+        new FormattableMarkup('Translation creation timestamp of the target translation @target is newer than the creation timestamp of the source translation @source for translatable created field.',
           ['@target' => $langcode, '@source' => $default_langcode]));
     }
     else {
@@ -178,7 +180,7 @@ abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
     $add_url = Url::fromRoute("entity.$entity_type_id.content_translation_add", [
       $entity->getEntityTypeId() => $entity->id(),
       'source' => $default_langcode,
-      'target' => $langcode
+      'target' => $langcode,
     ], ['language' => $language]);
     // This does not save anything, it merely reloads the form and fills in the
     // fields with the values from the different source language.
@@ -192,7 +194,7 @@ abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
     $add_url = Url::fromRoute("entity.$entity_type_id.content_translation_add", [
       $entity->getEntityTypeId() => $entity->id(),
       'source' => $source_langcode,
-      'target' => $langcode
+      'target' => $langcode,
     ], ['language' => $language]);
     $this->drupalPostForm($add_url, $edit, $this->getFormSubmitActionForNewTranslation($entity, $langcode));
     $storage->resetCache([$this->entityId]);
@@ -326,7 +328,7 @@ abstract class ContentTranslationUITestBase extends ContentTranslationTestBase {
         'created' => REQUEST_TIME - mt_rand(0, 1000),
       ];
       $edit = [
-        'content_translation[uid]' => $user->getUsername(),
+        'content_translation[uid]' => $user->getAccountName(),
         'content_translation[created]' => format_date($values[$langcode]['created'], 'custom', 'Y-m-d H:i:s O'),
       ];
       $url = $entity->urlInfo('edit-form', ['language' => ConfigurableLanguage::load($langcode)]);
