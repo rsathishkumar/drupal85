@@ -237,7 +237,7 @@ class ArrayCollection implements Collection, Selectable
      */
     public function get($key)
     {
-        return $this->elements[$key] ?? null;
+        return $this->elements[$key] ? $this->elements[$key] : null;
     }
 
     /**

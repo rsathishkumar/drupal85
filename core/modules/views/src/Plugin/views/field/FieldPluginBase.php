@@ -1177,6 +1177,14 @@ abstract class FieldPluginBase extends HandlerBase implements FieldHandlerInterf
       }
       else {
         $alter = ['phase' => static::RENDER_TEXT_PHASE_COMPLETELY] + $this->options['alter'];
+        if ($values->_entity) {
+          $type = $values->_entity->getEntityTypeId();
+          $field = $type . "_field_data_langcode";
+          if (isset($alter['url']) && isset($values->$field)) {
+            $language_interface = \Drupal::languageManager()->getLanguage($values->$field);
+            $alter['url']->setOption('language', $language_interface);
+          }
+        }
         $value = $this->renderText($alter);
       }
 

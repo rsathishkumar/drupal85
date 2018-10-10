@@ -6,7 +6,9 @@
     "require": {
         "composer/installers": "^1.0.24",
         "wikimedia/composer-merge-plugin": "^1.4",
-	"drupal/core": "^8.7"
+	"drupal/core": "^8.7",
+        "commerceguys/intl": "~1.0.1",
+        "drupal/address": "~1.0"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

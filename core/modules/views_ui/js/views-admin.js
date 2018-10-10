@@ -462,7 +462,7 @@
         var $draggableRow = $(this.draggableRows[i]);
         var $firstCell = $draggableRow.find('td').eq(0);
         if ($firstCell.length) {
-          var operatorValue = $draggableRow.prevAll('.views-group-title:first').find('option:selected').html();
+          var operatorValue = $draggableRow.prevAll('.views-group-title').find('option:selected').html();
           var operatorLabel = '<span class="views-operator-label">' + operatorValue + '</span>';
 
           var $nextRow = $draggableRow.nextAll(':visible').eq(0);
