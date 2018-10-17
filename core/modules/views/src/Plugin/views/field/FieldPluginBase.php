@@ -8,6 +8,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url as CoreUrl;
+use Drupal\Core\Url;
 use Drupal\views\Plugin\views\HandlerBase;
 use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Render\ViewsRenderPipelineMarkup;
@@ -1161,6 +1162,14 @@ abstract class FieldPluginBase extends HandlerBase implements FieldHandlerInterf
       if ($this instanceof MultiItemsFieldHandlerInterface) {
         $items = [];
         foreach ($raw_items as $count => $item) {
+          if ($values->_entity) {
+            $type = $values->_entity->getEntityTypeId();
+            $field = $type . "_field_data_langcode";
+            if (isset($item['rendered']['#url']) && isset($values->$field)) {
+              $language_interface = \Drupal::languageManager()->getLanguage($values->$field);
+              $item['rendered']['#url']->setOption('language', $language_interface);
+            }
+          }
           $value = $this->render_item($count, $item);
           if (is_array($value)) {
             $value = (string) $this->getRenderer()->render($value);
