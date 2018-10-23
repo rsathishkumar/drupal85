@@ -477,7 +477,7 @@ class StandardProfileTest extends BrowserTestBase {
     // Comment author name.
     $expected_value = [
       'type' => 'literal',
-      'value' => $this->webUser->getAccountName(),
+      'value' => $this->webUser->getUsername(),
     ];
     $this->assertTrue($graph->hasProperty($this->commenterUri, 'http://schema.org/name', $expected_value), 'Comment author name was found (schema:name).');
   }

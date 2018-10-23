@@ -8,7 +8,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\file\FileInterface;
-use Drupal\user\EntityOwnerTrait;
+use Drupal\user\UserInterface;
 
 /**
  * Defines the file entity class.
@@ -36,15 +36,13 @@ use Drupal\user\EntityOwnerTrait;
  *     "id" = "fid",
  *     "label" = "filename",
  *     "langcode" = "langcode",
- *     "uuid" = "uuid",
- *     "owner" = "uid",
+ *     "uuid" = "uuid"
  *   }
  * )
  */
 class File extends ContentEntityBase implements FileInterface {
 
   use EntityChangedTrait;
-  use EntityOwnerTrait;
 
   /**
    * {@inheritdoc}
@@ -116,6 +114,36 @@ class File extends ContentEntityBase implements FileInterface {
    */
   public function getCreatedTime() {
     return $this->get('created')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    return $this->get('uid')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwnerId() {
+    return $this->get('uid')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwnerId($uid) {
+    $this->set('uid', $uid);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwner(UserInterface $account) {
+    $this->set('uid', $account->id());
+    return $this;
   }
 
   /**
@@ -204,7 +232,6 @@ class File extends ContentEntityBase implements FileInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /** @var \Drupal\Core\Field\BaseFieldDefinition[] $fields */
     $fields = parent::baseFieldDefinitions($entity_type);
-    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
     $fields['fid']->setLabel(t('File ID'))
       ->setDescription(t('The file ID.'));
@@ -214,8 +241,10 @@ class File extends ContentEntityBase implements FileInterface {
     $fields['langcode']->setLabel(t('Language code'))
       ->setDescription(t('The file language code.'));
 
-    $fields['uid']
-      ->setDescription(t('The user ID of the file.'));
+    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('User ID'))
+      ->setDescription(t('The user ID of the file.'))
+      ->setSetting('target_type', 'user');
 
     $fields['filename'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Filename'))
@@ -253,13 +282,6 @@ class File extends ContentEntityBase implements FileInterface {
       ->setDescription(t('The timestamp that the file was last changed.'));
 
     return $fields;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function getDefaultEntityOwner() {
-    return NULL;
   }
 
 }

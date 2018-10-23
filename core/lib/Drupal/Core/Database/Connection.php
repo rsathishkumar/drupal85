@@ -524,7 +524,7 @@ abstract class Connection {
    *
    * For example, the comment:
    * @code
-   * \Drupal::database()->update('example')
+   * db_update('example')
    *  ->condition('id', $id)
    *  ->fields(array('field2' => 10))
    *  ->comment('Exploit * / DROP TABLE node; --')
@@ -1028,7 +1028,7 @@ abstract class Connection {
    * @code
    * $result = db_query(
    *   'SELECT * FROM person WHERE name LIKE :pattern',
-   *   array(':pattern' => $injected_connection->escapeLike($prefix) . '%')
+   *   array(':pattern' => db_like($prefix) . '%')
    * );
    * @endcode
    *

@@ -263,11 +263,11 @@ class RouterTest extends WebTestBase {
     $second_account = $this->drupalCreateUser();
 
     $this->drupalGet('router_test/test12/' . $second_account->id());
-    $this->assertText($account->getAccountName() . ':' . $second_account->getAccountName());
+    $this->assertText($account->getUsername() . ':' . $second_account->getUsername());
     $this->assertEqual($account->id(), $this->loggedInUser->id(), 'Ensure that the user was not changed.');
 
     $this->drupalGet('router_test/test13/' . $second_account->id());
-    $this->assertText($account->getAccountName() . ':' . $second_account->getAccountName());
+    $this->assertText($account->getUsername() . ':' . $second_account->getUsername());
     $this->assertEqual($account->id(), $this->loggedInUser->id(), 'Ensure that the user was not changed.');
   }
 
@@ -317,6 +317,13 @@ class RouterTest extends WebTestBase {
     // It should not matter how many leading slashes are used and query strings
     // should be preserved.
     $url = $request->getUriForPath('/////////////////////////////////////////////////router_test/test1') . '?qs=test';
+    $this->drupalGet($url);
+    $this->assertEqual(1, $this->redirectCount, $url . " redirected to " . $this->url);
+    $this->assertUrl($request->getUriForPath('/router_test/test1') . '?qs=test');
+
+    // Ensure that external URLs in destination query params are not redirected
+    // to.
+    $url = $request->getUriForPath('/////////////////////////////////////////////////router_test/test1') . '?qs=test&destination=http://www.example.com%5c@drupal8alt.test';
     $this->drupalGet($url);
     $this->assertEqual(1, $this->redirectCount, $url . " redirected to " . $this->url);
     $this->assertUrl($request->getUriForPath('/router_test/test1') . '?qs=test');

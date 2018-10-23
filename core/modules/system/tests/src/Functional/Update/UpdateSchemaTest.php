@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\system\Functional\Update;
 
-use Drupal\Core\Database\Database;
 use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 
@@ -45,11 +44,9 @@ class UpdateSchemaTest extends BrowserTestBase {
    * Tests that update hooks are properly run.
    */
   public function testUpdateHooks() {
-    $connection = Database::getConnection();
-
     // Verify that the 8000 schema is in place.
     $this->assertEqual(drupal_get_installed_schema_version('update_test_schema'), 8000);
-    $this->assertFalse($connection->schema()->indexExists('update_test_schema_table', 'test'), 'Version 8000 of the update_test_schema module is installed.');
+    $this->assertFalse(db_index_exists('update_test_schema_table', 'test'), 'Version 8000 of the update_test_schema module is installed.');
 
     // Increment the schema version.
     \Drupal::state()->set('update_test_schema_version', 8001);
@@ -65,7 +62,7 @@ class UpdateSchemaTest extends BrowserTestBase {
     // Ensure schema has changed.
     $this->assertEqual(drupal_get_installed_schema_version('update_test_schema', TRUE), 8001);
     // Ensure the index was added for column a.
-    $this->assertTrue($connection->schema()->indexExists('update_test_schema_table', 'test'), 'Version 8001 of the update_test_schema module is installed.');
+    $this->assertTrue(db_index_exists('update_test_schema_table', 'test'), 'Version 8001 of the update_test_schema module is installed.');
   }
 
 }

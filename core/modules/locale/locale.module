@@ -836,7 +836,7 @@ function locale_translation_get_file_history() {
  *   FALSE on failure. Otherwise SAVED_NEW or SAVED_UPDATED.
  */
 function locale_translation_update_file_history($file) {
-  $status = \Drupal::database()->merge('locale_file')
+  $status = db_merge('locale_file')
     ->key([
       'project' => $file->project,
       'langcode' => $file->langcode,
@@ -863,7 +863,7 @@ function locale_translation_update_file_history($file) {
  *   Language code(s) to be deleted from the file history.
  */
 function locale_translation_file_history_delete($projects = [], $langcodes = []) {
-  $query = \Drupal::database()->delete('locale_file');
+  $query = db_delete('locale_file');
   if (!empty($projects)) {
     $query->condition('project', $projects, 'IN');
   }

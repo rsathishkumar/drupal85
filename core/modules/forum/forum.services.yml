@@ -16,7 +16,7 @@ services:
       - { name: breadcrumb_builder, priority: 1001 }
   forum.index_storage:
     class: Drupal\forum\ForumIndexStorage
-    arguments: ['@database']
+    arguments: ['@database', '@forum_manager']
     tags:
       - { name: backend_overridable }
 

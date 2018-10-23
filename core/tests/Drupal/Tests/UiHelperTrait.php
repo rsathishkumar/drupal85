@@ -258,7 +258,7 @@ trait UiHelperTrait {
 
     $this->drupalGet('user/login');
     $this->submitForm([
-      'name' => $account->getAccountName(),
+      'name' => $account->getUsername(),
       'pass' => $account->passRaw,
     ], t('Log in'));
 
@@ -371,7 +371,7 @@ trait UiHelperTrait {
    *   Options to be passed to Url::fromUri().
    *
    * @return string
-   *   An absolute URL string.
+   *   An absolute URL stsring.
    */
   protected function buildUrl($path, array $options = []) {
     if ($path instanceof Url) {

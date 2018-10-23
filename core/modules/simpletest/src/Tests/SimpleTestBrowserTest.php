@@ -58,7 +58,7 @@ class SimpleTestBrowserTest extends WebTestBase {
     // Test the maximum redirection option.
     $this->maximumRedirects = 1;
     $edit = [
-      'name' => $user->getAccountName(),
+      'name' => $user->getUsername(),
       'pass' => $user->pass_raw,
     ];
     $this->drupalPostForm('user/login', $edit, t('Log in'), [

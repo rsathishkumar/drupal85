@@ -459,6 +459,9 @@ class BrowserTestBaseTest extends BrowserTestBase {
       $this->pass($e->getMessage());
     }
 
+    // Test \Drupal\FunctionalTests\AssertLegacyTrait::getAllOptions.
+    $this->drupalGet('/form-test/select');
+    $this->assertCount(6, $this->getAllOptions($this->cssSelect('select[name="opt_groups"]')[0]));
   }
 
   /**
@@ -573,7 +576,7 @@ class BrowserTestBaseTest extends BrowserTestBase {
     $this->assertFieldChecked('edit-checkbox-enabled');
     $this->assertNoFieldChecked('edit-checkbox-disabled');
 
-    // Test that the assertion fails correctly with non-existent field id.
+    // Test that the assertion fails correctly with non-existant field id.
     try {
       $this->assertNoFieldChecked('incorrect_checkbox_id');
       $this->fail('The "incorrect_checkbox_id" field was found');

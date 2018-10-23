@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\system\Functional\Entity\Update;
 
+use Drupal\Core\Entity\Sql\TemporaryTableMapping;
 use Drupal\FunctionalTests\Update\UpdatePathTestBase;
 use Drupal\Tests\system\Functional\Entity\Traits\EntityDefinitionTestTrait;
 
@@ -66,11 +67,10 @@ abstract class SqlContentEntityStorageSchemaConverterTestBase extends UpdatePath
   public function testMakeRevisionable() {
     // Check that entity type is not revisionable prior to running the update
     // process.
-    $original_entity_type_definition = $this->lastInstalledSchemaRepository->getLastInstalledDefinition('entity_test_update');
-    $original_field_storage_definitions = $this->lastInstalledSchemaRepository->getLastInstalledFieldStorageDefinitions('entity_test_update');
-    $this->assertFalse($original_entity_type_definition->isRevisionable());
+    $entity_test_update = $this->lastInstalledSchemaRepository->getLastInstalledDefinition('entity_test_update');
+    $this->assertFalse($entity_test_update->isRevisionable());
 
-    $translatable = $original_entity_type_definition->isTranslatable();
+    $translatable = $entity_test_update->isTranslatable();
 
     // Make the entity type revisionable and run the updates.
     if ($translatable) {
@@ -156,17 +156,14 @@ abstract class SqlContentEntityStorageSchemaConverterTestBase extends UpdatePath
 
     // Check that temporary tables have been removed at the end of the process.
     $schema = \Drupal::database()->schema();
-    $temporary_table_names = $storage->getCustomTableMapping($entity_test_update, $field_storage_definitions, 'tmp_')->getTableNames();
-    $current_table_names = $storage->getCustomTableMapping($entity_test_update, $field_storage_definitions)->getTableNames();
-    foreach (array_combine($temporary_table_names, $current_table_names) as $temp_table_name => $table_name) {
-      $this->assertTrue($schema->tableExists($table_name));
-      $this->assertFalse($schema->tableExists($temp_table_name));
+    foreach ($storage->getTableMapping()->getTableNames() as $table_name) {
+      $this->assertFalse($schema->tableExists(TemporaryTableMapping::getTempTableName($table_name)));
     }
 
     // Check that backup tables have been removed at the end of the process.
-    $table_mapping = $storage->getCustomTableMapping($original_entity_type_definition, $original_field_storage_definitions, 'old_');
-    foreach ($table_mapping->getTableNames() as $table_name) {
-      $this->assertFalse($schema->tableExists($table_name));
+    $schema = \Drupal::database()->schema();
+    foreach ($storage->getTableMapping()->getTableNames() as $table_name) {
+      $this->assertFalse($schema->tableExists(TemporaryTableMapping::getTempTableName($table_name, 'old_')));
     }
   }
 

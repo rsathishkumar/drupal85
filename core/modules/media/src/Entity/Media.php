@@ -10,7 +10,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\media\MediaInterface;
 use Drupal\media\MediaSourceEntityConstraintsInterface;
 use Drupal\media\MediaSourceFieldConstraintsInterface;
-use Drupal\user\EntityOwnerTrait;
+use Drupal\user\UserInterface;
 
 /**
  * Defines the media entity class.
@@ -60,7 +60,6 @@ use Drupal\user\EntityOwnerTrait;
  *     "langcode" = "langcode",
  *     "uuid" = "uuid",
  *     "published" = "status",
- *     "owner" = "uid",
  *   },
  *   revision_metadata_keys = {
  *     "revision_user" = "revision_user",
@@ -86,21 +85,21 @@ use Drupal\user\EntityOwnerTrait;
  */
 class Media extends EditorialContentEntityBase implements MediaInterface {
 
-  use EntityOwnerTrait;
   use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
    */
   public function getName() {
-    $name = $this->getEntityKey('label');
+    $name = $this->get('name');
 
-    if (empty($name)) {
+    if ($name->isEmpty()) {
       $media_source = $this->getSource();
       return $media_source->getMetadata($this, $media_source->getPluginDefinition()['default_name_metadata_attribute']);
     }
-
-    return $name;
+    else {
+      return $name->value;
+    }
   }
 
   /**
@@ -129,6 +128,34 @@ class Media extends EditorialContentEntityBase implements MediaInterface {
    */
   public function setCreatedTime($timestamp) {
     return $this->set('created', $timestamp);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwner() {
+    return $this->get('uid')->entity;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwner(UserInterface $account) {
+    return $this->set('uid', $account->id());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getOwnerId() {
+    return $this->get('uid')->target_id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setOwnerId($uid) {
+    return $this->set('uid', $uid);
   }
 
   /**
@@ -426,7 +453,6 @@ class Media extends EditorialContentEntityBase implements MediaInterface {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
-    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
@@ -458,10 +484,13 @@ class Media extends EditorialContentEntityBase implements MediaInterface {
       ->setDisplayConfigurable('view', TRUE)
       ->setReadOnly(TRUE);
 
-    $fields['uid']
+    $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Authored by'))
       ->setDescription(t('The user ID of the author.'))
       ->setRevisionable(TRUE)
+      ->setDefaultValueCallback(static::class . '::getCurrentUserId')
+      ->setSetting('target_type', 'user')
+      ->setTranslatable(TRUE)
       ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
         'weight' => 5,
@@ -522,14 +551,10 @@ class Media extends EditorialContentEntityBase implements MediaInterface {
    *
    * @see ::baseFieldDefinitions()
    *
-   * @deprecated The ::getCurrentUserId method is deprecated in 8.6.x and will
-   *   be removed before 9.0.0.
-   *
    * @return int[]
    *   An array of default values.
    */
   public static function getCurrentUserId() {
-    @trigger_error('The ::getCurrentUserId method is deprecated in 8.6.x and will be removed before 9.0.0.', E_USER_DEPRECATED);
     return [\Drupal::currentUser()->id()];
   }
 

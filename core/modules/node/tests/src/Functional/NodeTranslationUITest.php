@@ -27,7 +27,6 @@ class NodeTranslationUITest extends ContentTranslationUITestBase {
     'url.path.parent',
     'url.query_args:_wrapper_format',
     'user.roles',
-    'url.path.is_front',
     // These two cache contexts are added by BigPipe.
     'cookies:big_pipe_nojs',
     'session.exists',
@@ -197,7 +196,7 @@ class NodeTranslationUITest extends ContentTranslationUITestBase {
         'promote' => (bool) mt_rand(0, 1),
       ];
       $edit = [
-        'uid[0][target_id]' => $user->getAccountName(),
+        'uid[0][target_id]' => $user->getUsername(),
         'created[0][value][date]' => format_date($values[$langcode]['created'], 'custom', 'Y-m-d'),
         'created[0][value][time]' => format_date($values[$langcode]['created'], 'custom', 'H:i:s'),
         'sticky[value]' => $values[$langcode]['sticky'],

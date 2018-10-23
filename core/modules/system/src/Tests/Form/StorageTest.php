@@ -2,7 +2,6 @@
 
 namespace Drupal\system\Tests\Form;
 
-use Drupal\Core\Database\Database;
 use Drupal\simpletest\WebTestBase;
 
 /**
@@ -175,7 +174,7 @@ class StorageTest extends WebTestBase {
 
     // Assert that a watchdog message was logged by
     // \Drupal::formBuilder()->setCache().
-    $status = (bool) Database::getConnection()->queryRange('SELECT 1 FROM {watchdog} WHERE message = :message', 0, 1, [':message' => 'Form build-id mismatch detected while attempting to store a form in the cache.']);
+    $status = (bool) db_query_range('SELECT 1 FROM {watchdog} WHERE message = :message', 0, 1, [':message' => 'Form build-id mismatch detected while attempting to store a form in the cache.']);
     $this->assert($status, 'A watchdog message was logged by \Drupal::formBuilder()->setCache');
 
     // Ensure that the form state was not poisoned by the preceding call.

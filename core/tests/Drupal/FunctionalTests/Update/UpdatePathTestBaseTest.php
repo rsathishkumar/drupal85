@@ -4,7 +4,6 @@ namespace Drupal\FunctionalTests\Update;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Core\Database\Database;
 
 /**
  * Tests the update path base class.
@@ -76,13 +75,11 @@ class UpdatePathTestBaseTest extends UpdatePathTestBase {
    * Test that updates are properly run.
    */
   public function testUpdateHookN() {
-    $connection = Database::getConnection();
-
     // Increment the schema version.
     \Drupal::state()->set('update_test_schema_version', 8001);
     $this->runUpdates();
 
-    $select = $connection->select('watchdog');
+    $select = \Drupal::database()->select('watchdog');
     $select->orderBy('wid', 'DESC');
     $select->range(0, 5);
     $select->fields('watchdog', ['message']);
@@ -95,7 +92,7 @@ class UpdatePathTestBaseTest extends UpdatePathTestBase {
     // Ensure schema has changed.
     $this->assertEqual(drupal_get_installed_schema_version('update_test_schema', TRUE), 8001);
     // Ensure the index was added for column a.
-    $this->assertTrue($connection->schema()->indexExists('update_test_schema_table', 'test'), 'Version 8001 of the update_test_schema module is installed.');
+    $this->assertTrue(db_index_exists('update_test_schema_table', 'test'), 'Version 8001 of the update_test_schema module is installed.');
   }
 
 }

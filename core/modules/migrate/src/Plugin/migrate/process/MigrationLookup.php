@@ -150,23 +150,21 @@ class MigrationLookup extends ProcessPluginBase implements ContainerFactoryPlugi
    * {@inheritdoc}
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
-    $lookup_migrations_ids = $this->configuration['migration'];
-    if (!is_array($lookup_migrations_ids)) {
-      $lookup_migrations_ids = [$lookup_migrations_ids];
+    $migration_ids = $this->configuration['migration'];
+    if (!is_array($migration_ids)) {
+      $migration_ids = [$migration_ids];
     }
     $self = FALSE;
-    /** @var \Drupal\migrate\Plugin\MigrationInterface[] $lookup_migrations */
+    /** @var \Drupal\migrate\Plugin\MigrationInterface[] $migrations */
     $destination_ids = NULL;
     $source_id_values = [];
-
-    $lookup_migrations = $this->migrationPluginManager->createInstances($lookup_migrations_ids);
-
-    foreach ($lookup_migrations as $lookup_migration_id => $lookup_migration) {
-      if ($lookup_migration_id == $this->migration->id()) {
+    $migrations = $this->migrationPluginManager->createInstances($migration_ids);
+    foreach ($migrations as $migration_id => $migration) {
+      if ($migration_id == $this->migration->id()) {
         $self = TRUE;
       }
-      if (isset($this->configuration['source_ids'][$lookup_migration_id])) {
-        $configuration = ['source' => $this->configuration['source_ids'][$lookup_migration_id]];
+      if (isset($this->configuration['source_ids'][$migration_id])) {
+        $configuration = ['source' => $this->configuration['source_ids'][$migration_id]];
         $value = $this->processPluginManager
           ->createInstance('get', $configuration, $this->migration)
           ->transform(NULL, $migrate_executable, $row, $destination_property);
@@ -175,9 +173,9 @@ class MigrationLookup extends ProcessPluginBase implements ContainerFactoryPlugi
         $value = [$value];
       }
       $this->skipOnEmpty($value);
-      $source_id_values[$lookup_migration_id] = $value;
+      $source_id_values[$migration_id] = $value;
       // Break out of the loop as soon as a destination ID is found.
-      if ($destination_ids = $lookup_migration->getIdMap()->lookupDestinationId($source_id_values[$lookup_migration_id])) {
+      if ($destination_ids = $migration->getIdMap()->lookupDestinationId($source_id_values[$migration_id])) {
         break;
       }
     }
@@ -186,36 +184,36 @@ class MigrationLookup extends ProcessPluginBase implements ContainerFactoryPlugi
       return NULL;
     }
 
-    if (!$destination_ids && ($self || isset($this->configuration['stub_id']) || count($lookup_migrations) == 1)) {
+    if (!$destination_ids && ($self || isset($this->configuration['stub_id']) || count($migrations) == 1)) {
       // If the lookup didn't succeed, figure out which migration will do the
       // stubbing.
       if ($self) {
-        $stub_migration = $this->migration;
+        $migration = $this->migration;
       }
       elseif (isset($this->configuration['stub_id'])) {
-        $stub_migration = $lookup_migrations[$this->configuration['stub_id']];
+        $migration = $migrations[$this->configuration['stub_id']];
       }
       else {
-        $stub_migration = reset($lookup_migrations);
+        $migration = reset($migrations);
       }
-      $destination_plugin = $stub_migration->getDestinationPlugin(TRUE);
+      $destination_plugin = $migration->getDestinationPlugin(TRUE);
       // Only keep the process necessary to produce the destination ID.
-      $process = $stub_migration->getProcess();
+      $process = $migration->getProcess();
 
       // We already have the source ID values but need to key them for the Row
       // constructor.
-      $source_ids = $stub_migration->getSourcePlugin()->getIds();
+      $source_ids = $migration->getSourcePlugin()->getIds();
       $values = [];
       foreach (array_keys($source_ids) as $index => $source_id) {
-        $values[$source_id] = $source_id_values[$stub_migration->id()][$index];
+        $values[$source_id] = $source_id_values[$migration->id()][$index];
       }
 
-      $stub_row = $this->createStubRow($values + $stub_migration->getSourceConfiguration(), $source_ids);
+      $stub_row = $this->createStubRow($values + $migration->getSourceConfiguration(), $source_ids);
 
       // Do a normal migration with the stub row.
       $migrate_executable->processRow($stub_row, $process);
       $destination_ids = [];
-      $id_map = $stub_migration->getIdMap();
+      $id_map = $migration->getIdMap();
       try {
         $destination_ids = $destination_plugin->import($stub_row);
       }
@@ -240,7 +238,7 @@ class MigrationLookup extends ProcessPluginBase implements ContainerFactoryPlugi
   /**
    * Skips the migration process entirely if the value is FALSE.
    *
-   * @param array $value
+   * @param mixed $value
    *   The incoming value to transform.
    *
    * @throws \Drupal\migrate\MigrateSkipProcessException

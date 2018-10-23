@@ -7,7 +7,6 @@ use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Routing\RoutingEvents;
 use Symfony\Component\EventDispatcher\Event;
-use Drupal\Core\Database\Connection;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -28,26 +27,16 @@ class MenuRouterRebuildSubscriber implements EventSubscriberInterface {
   protected $menuLinkManager;
 
   /**
-   * The database connection.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected $connection;
-
-  /**
    * Constructs the MenuRouterRebuildSubscriber object.
    *
    * @param \Drupal\Core\Lock\LockBackendInterface $lock
    *   The lock backend.
    * @param \Drupal\Core\Menu\MenuLinkManagerInterface $menu_link_manager
    *   The menu link plugin manager.
-   * @param \Drupal\Core\Database\Connection $connection
-   *   The database connection.
    */
-  public function __construct(LockBackendInterface $lock, MenuLinkManagerInterface $menu_link_manager, Connection $connection) {
+  public function __construct(LockBackendInterface $lock, MenuLinkManagerInterface $menu_link_manager) {
     $this->lock = $lock;
     $this->menuLinkManager = $menu_link_manager;
-    $this->connection = $connection;
   }
 
   /**
@@ -66,7 +55,7 @@ class MenuRouterRebuildSubscriber implements EventSubscriberInterface {
    */
   protected function menuLinksRebuild() {
     if ($this->lock->acquire(__FUNCTION__)) {
-      $transaction = $this->connection->startTransaction();
+      $transaction = db_transaction();
       try {
         // Ensure the menu links are up to date.
         $this->menuLinkManager->rebuild();

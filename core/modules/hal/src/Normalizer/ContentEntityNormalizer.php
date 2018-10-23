@@ -126,7 +126,7 @@ class ContentEntityNormalizer extends NormalizerBase {
 
     // Figure out the language to use.
     if (isset($data[$default_langcode_key])) {
-      // Find the field item for which the default_langcode value is set to 1 and
+      // Find the field item for which the default_lancode value is set to 1 and
       // set the langcode the right default language.
       foreach ($data[$default_langcode_key] as $item) {
         if (!empty($item['value']) && isset($item['lang'])) {
@@ -179,25 +179,17 @@ class ContentEntityNormalizer extends NormalizerBase {
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity.
-   * @param array $context
-   *   Normalization/serialization context.
-   *
    * @return string
    *   The entity URI.
    */
-  protected function getEntityUri(EntityInterface $entity, array $context = []) {
+  protected function getEntityUri(EntityInterface $entity) {
     // Some entity types don't provide a canonical link template, at least call
     // out to ->url().
     if ($entity->isNew() || !$entity->hasLinkTemplate('canonical')) {
       return $entity->url('canonical', []);
     }
-    $url = $entity->toUrl('canonical', ['absolute' => TRUE]);
-    if (!$url->isExternal()) {
-      $url->setRouteParameter('_format', 'hal_json');
-    }
-    $generated_url = $url->toString(TRUE);
-    $this->addCacheableDependency($context, $generated_url);
-    return $generated_url->getGeneratedUrl();
+    $url = $entity->urlInfo('canonical', ['absolute' => TRUE]);
+    return $url->setRouteParameter('_format', 'hal_json')->toString();
   }
 
   /**

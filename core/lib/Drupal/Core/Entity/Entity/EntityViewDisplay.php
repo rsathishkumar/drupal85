@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityDisplayPluginCollection;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Entity\EntityDisplayBase;
-use Drupal\Core\Render\Element;
 use Drupal\Core\TypedData\TranslatableInterface as TranslatableDataInterface;
 
 /**
@@ -270,7 +269,7 @@ class EntityViewDisplay extends EntityDisplayBase implements EntityViewDisplayIn
     foreach ($entities as $id => $entity) {
       // Assign the configured weights.
       foreach ($this->getComponents() as $name => $options) {
-        if (isset($build_list[$id][$name]) && !Element::isEmpty($build_list[$id][$name])) {
+        if (isset($build_list[$id][$name])) {
           $build_list[$id][$name]['#weight'] = $options['weight'];
         }
       }

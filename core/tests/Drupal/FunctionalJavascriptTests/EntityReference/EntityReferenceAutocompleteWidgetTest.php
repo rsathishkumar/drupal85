@@ -2,10 +2,10 @@
 
 namespace Drupal\FunctionalJavascriptTests\EntityReference;
 
+use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
-use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
-use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
-use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\simpletest\ContentTypeCreationTrait;
+use Drupal\simpletest\NodeCreationTrait;
 
 /**
  * Tests the output of entity reference autocomplete widgets.

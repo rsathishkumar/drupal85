@@ -336,18 +336,15 @@ class SqlContentEntityStorage extends ContentEntityStorageBase implements SqlEnt
    * @param \Drupal\Core\Field\FieldStorageDefinitionInterface[] $storage_definitions
    *   An array of field storage definitions to be used to compute the table
    *   mapping.
-   * @param string $prefix
-   *   (optional) A prefix to be used by all the tables of this mapping.
-   *   Defaults to an empty string.
    *
    * @return \Drupal\Core\Entity\Sql\TableMappingInterface
    *   A table mapping object for the entity's tables.
    *
    * @internal
    */
-  public function getCustomTableMapping(ContentEntityTypeInterface $entity_type, array $storage_definitions, $prefix = '') {
-    $prefix = $prefix ?: ($this->temporary ? 'tmp_' : '');
-    return DefaultTableMapping::create($entity_type, $storage_definitions, $prefix);
+  public function getCustomTableMapping(ContentEntityTypeInterface $entity_type, array $storage_definitions) {
+    $table_mapping_class = $this->temporary ? TemporaryTableMapping::class : DefaultTableMapping::class;
+    return $table_mapping_class::create($entity_type, $storage_definitions);
   }
 
   /**
@@ -521,7 +518,7 @@ class SqlContentEntityStorage extends ContentEntityStorageBase implements SqlEnt
           // Some fields can have more then one columns in the data table so
           // column names are needed.
           foreach ($data_fields as $data_field) {
-            // \Drupal\Core\Entity\Sql\TableMappingInterface::getColumnNames()
+            // \Drupal\Core\Entity\Sql\TableMappingInterface:: getColumNames()
             // returns an array keyed by property names so remove the keys
             // before array_merge() to avoid losing data with fields having the
             // same columns i.e. value.

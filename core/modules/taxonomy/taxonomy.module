@@ -548,9 +548,8 @@ function taxonomy_build_node_index($node) {
     }
     // Insert index entries for all the node's terms.
     if (!empty($tid_all)) {
-      $connection = \Drupal::database();
       foreach ($tid_all as $tid) {
-        $connection->merge('taxonomy_index')
+        db_merge('taxonomy_index')
           ->key(['nid' => $node->id(), 'tid' => $tid, 'status' => $node->isPublished()])
           ->fields(['sticky' => $sticky, 'created' => $node->getCreatedTime()])
           ->execute();
@@ -588,7 +587,7 @@ function taxonomy_node_predelete(EntityInterface $node) {
  */
 function taxonomy_delete_node_index(EntityInterface $node) {
   if (\Drupal::config('taxonomy.settings')->get('maintain_index_table')) {
-    \Drupal::database()->delete('taxonomy_index')->condition('nid', $node->id())->execute();
+    db_delete('taxonomy_index')->condition('nid', $node->id())->execute();
   }
 }
 
@@ -598,7 +597,7 @@ function taxonomy_delete_node_index(EntityInterface $node) {
 function taxonomy_taxonomy_term_delete(Term $term) {
   if (\Drupal::config('taxonomy.settings')->get('maintain_index_table')) {
     // Clean up the {taxonomy_index} table when terms are deleted.
-    \Drupal::database()->delete('taxonomy_index')->condition('tid', $term->id())->execute();
+    db_delete('taxonomy_index')->condition('tid', $term->id())->execute();
   }
 }
 

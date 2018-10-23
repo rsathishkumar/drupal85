@@ -8,6 +8,11 @@ use Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase;
 /**
  * Drupal 7 field instances source from database.
  *
+ * @internal
+ *
+ * This class is marked as internal and should not be extended. Use
+ * Drupal\migrate_drupal\Plugin\migrate\source\DrupalSqlBase instead.
+ *
  * @MigrateSource(
  *   id = "d7_field_instance",
  *   source_module = "field"

@@ -12,7 +12,6 @@
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\user\UserInterface;
 
 /**
  * Entities changed before this time are always shown as read.
@@ -108,7 +107,7 @@ function history_write($nid, $account = NULL) {
   }
 
   if ($account->isAuthenticated()) {
-    \Drupal::database()->merge('history')
+    db_merge('history')
       ->keys([
         'uid' => $account->id(),
         'nid' => $nid,
@@ -125,7 +124,7 @@ function history_write($nid, $account = NULL) {
  * Implements hook_cron().
  */
 function history_cron() {
-  \Drupal::database()->delete('history')
+  db_delete('history')
     ->condition('timestamp', HISTORY_READ_LIMIT, '<')
     ->execute();
 }
@@ -152,7 +151,7 @@ function history_node_view_alter(array &$build, EntityInterface $node, EntityVie
  * Implements hook_ENTITY_TYPE_delete() for node entities.
  */
 function history_node_delete(EntityInterface $node) {
-  \Drupal::database()->delete('history')
+  db_delete('history')
     ->condition('nid', $node->id())
     ->execute();
 }
@@ -160,10 +159,10 @@ function history_node_delete(EntityInterface $node) {
 /**
  * Implements hook_user_cancel().
  */
-function history_user_cancel($edit, UserInterface $account, $method) {
+function history_user_cancel($edit, $account, $method) {
   switch ($method) {
     case 'user_cancel_reassign':
-      \Drupal::database()->delete('history')
+      db_delete('history')
         ->condition('uid', $account->id())
         ->execute();
       break;
@@ -174,7 +173,7 @@ function history_user_cancel($edit, UserInterface $account, $method) {
  * Implements hook_ENTITY_TYPE_delete() for user entities.
  */
 function history_user_delete($account) {
-  \Drupal::database()->delete('history')
+  db_delete('history')
     ->condition('uid', $account->id())
     ->execute();
 }

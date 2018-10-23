@@ -2,9 +2,6 @@
 
 namespace Drupal\views\Tests;
 
-@trigger_error(__NAMESPACE__ . '\ViewKernelTestBase is deprecated in Drupal 8.0.x, will be removed in Drupal 8.2.x. Use \Drupal\Tests\views\Kernel\ViewsKernelTestBase instead.', E_USER_DEPRECATED);
-
-use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\simpletest\KernelTestBase;
 
@@ -35,7 +32,7 @@ abstract class ViewKernelTestBase extends KernelTestBase {
    * {@inheritdoc}
    *
    * @param bool $import_test_views
-   *   Should the views specified on the test class be imported. If you need
+   *   Should the views specififed on the test class be imported. If you need
    *   to setup some additional stuff, like fields, you need to call false and
    *   then call createTestViews for your own.
    */
@@ -74,7 +71,7 @@ abstract class ViewKernelTestBase extends KernelTestBase {
 
     // Load the test dataset.
     $data_set = $this->dataSet();
-    $query = Database::getConnection()->insert('views_test_data')
+    $query = db_insert('views_test_data')
       ->fields(array_keys($data_set[0]));
     foreach ($data_set as $record) {
       $query->values($record);

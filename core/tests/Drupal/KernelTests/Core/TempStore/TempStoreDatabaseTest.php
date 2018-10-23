@@ -63,8 +63,7 @@ class TempStoreDatabaseTest extends KernelTestBase {
    */
   public function testSharedTempStore() {
     // Create a key/value collection.
-    $database = Database::getConnection();
-    $factory = new SharedTempStoreFactory(new KeyValueExpirableFactory(\Drupal::getContainer()), new DatabaseLockBackend($database), $this->container->get('request_stack'));
+    $factory = new SharedTempStoreFactory(new KeyValueExpirableFactory(\Drupal::getContainer()), new DatabaseLockBackend(Database::getConnection()), $this->container->get('request_stack'));
     $collection = $this->randomMachineName();
 
     // Create two mock users.
@@ -128,7 +127,7 @@ class TempStoreDatabaseTest extends KernelTestBase {
 
     // Now manually expire the item (this is not exposed by the API) and then
     // assert it is no longer accessible.
-    $database->update('key_value_expire')
+    db_update('key_value_expire')
       ->fields(['expire' => REQUEST_TIME - 1])
       ->condition('collection', "tempstore.shared.$collection")
       ->condition('name', $key)

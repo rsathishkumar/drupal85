@@ -22,7 +22,6 @@ abstract class ContentEntityBase extends Entity implements \IteratorAggregate, C
   use EntityChangesDetectionTrait {
     getFieldsToSkipFromTranslationChangesCheck as traitGetFieldsToSkipFromTranslationChangesCheck;
   }
-  use SynchronizableEntityTrait;
 
   /**
    * The plain data values of the contained fields.
@@ -922,7 +921,6 @@ abstract class ContentEntityBase extends Entity implements \IteratorAggregate, C
     $translation->loadedRevisionId = &$this->loadedRevisionId;
     $translation->isDefaultRevision = &$this->isDefaultRevision;
     $translation->enforceRevisionTranslationAffected = &$this->enforceRevisionTranslationAffected;
-    $translation->isSyncing = &$this->isSyncing;
 
     return $translation;
   }
@@ -1220,9 +1218,6 @@ abstract class ContentEntityBase extends Entity implements \IteratorAggregate, C
 
     $is_revision_translation_affected_enforced = $this->enforceRevisionTranslationAffected;
     $this->enforceRevisionTranslationAffected = &$is_revision_translation_affected_enforced;
-
-    $is_syncing = $this->isSyncing;
-    $this->isSyncing = &$is_syncing;
 
     foreach ($this->fields as $name => $fields_by_langcode) {
       $this->fields[$name] = [];

@@ -140,9 +140,8 @@ function search_preprocess_block(&$variables) {
  *   omitted, all items matching $sid and $type are cleared.
  */
 function search_index_clear($type = NULL, $sid = NULL, $langcode = NULL) {
-  $connection = \Drupal::database();
-  $query_index = $connection->delete('search_index');
-  $query_dataset = $connection->delete('search_dataset');
+  $query_index = db_delete('search_index');
+  $query_dataset = db_delete('search_dataset');
   if ($type) {
     $query_index->condition('type', $type);
     $query_dataset->condition('type', $type);
@@ -212,14 +211,13 @@ function search_cron() {
  * up to date (even if cron times out or otherwise fails).
  */
 function search_update_totals() {
-  $connection = \Drupal::database();
   // Update word IDF (Inverse Document Frequency) counts for new/changed words.
   foreach (search_dirty() as $word => $dummy) {
     // Get total count
     $total = db_query("SELECT SUM(score) FROM {search_index} WHERE word = :word", [':word' => $word], ['target' => 'replica'])->fetchField();
     // Apply Zipf's law to equalize the probability distribution.
     $total = log10(1 + 1 / (max(1, $total)));
-    $connection->merge('search_total')
+    db_merge('search_total')
       ->key('word', $word)
       ->fields(['count' => $total])
       ->execute();
@@ -233,7 +231,7 @@ function search_update_totals() {
     $or->condition('word', $word->realword);
   }
   if (count($or) > 0) {
-    $connection->delete('search_total')
+    db_delete('search_total')
       ->condition($or)
       ->execute();
   }
@@ -512,7 +510,7 @@ function search_index($type, $sid, $langcode, $text) {
         foreach ($words as $word) {
           // Add word to accumulator
           $accum .= $word . ' ';
-          // Check word length.
+          // Check wordlength
           if (is_numeric($word) || mb_strlen($word) >= $minimum_word_size) {
             if (!isset($scored_words[$word])) {
               $scored_words[$word] = 0;
@@ -538,9 +536,8 @@ function search_index($type, $sid, $langcode, $text) {
   // cache tags.
   search_index_clear($type, $sid, $langcode);
 
-  $connection = \Drupal::database();
   // Insert cleaned up data into dataset
-  $connection->insert('search_dataset')
+  db_insert('search_dataset')
     ->fields([
       'sid' => $sid,
       'langcode' => $langcode,
@@ -555,7 +552,7 @@ function search_index($type, $sid, $langcode, $text) {
     // If a word already exists in the database, its score gets increased
     // appropriately. If not, we create a new record with the appropriate
     // starting score.
-    $connection->merge('search_index')
+    db_merge('search_index')
       ->keys([
         'word' => $word,
         'sid' => $sid,
@@ -588,7 +585,7 @@ function search_index($type, $sid, $langcode, $text) {
  *   $type and $sid is marked.
  */
 function search_mark_for_reindex($type = NULL, $sid = NULL, $langcode = NULL) {
-  $query = \Drupal::database()->update('search_dataset')
+  $query = db_update('search_dataset')
     ->fields(['reindex' => REQUEST_TIME])
     // Only mark items that were not previously marked for reindex, so that
     // marked items maintain their priority by request time.

@@ -340,6 +340,7 @@ services:
       - [setValidationConstraintManager, ['@validation.constraint']]
   context.handler:
     class: Drupal\Core\Plugin\Context\ContextHandler
+    arguments: ['@typed_data_manager']
   context.repository:
     class: Drupal\Core\Plugin\Context\LazyContextRepository
     arguments: ['@service_container']
@@ -354,10 +355,6 @@ services:
     class: Drupal\Core\Database\Connection
     factory: Drupal\Core\Database\Database::getConnection
     arguments: [default]
-  database.replica:
-    class: Drupal\Core\Database\Connection
-    factory: Drupal\Core\Database\Database::getConnection
-    arguments: [replica]
   datetime.time:
     class: Drupal\Component\Datetime\Time
     arguments: ['@request_stack']
@@ -506,7 +503,7 @@ services:
     class: Drupal\Core\Extension\ModuleInstaller
     tags:
       - { name: service_collector, tag: 'module_install.uninstall_validator', call: addUninstallValidator }
-    arguments: ['@app.root', '@module_handler', '@kernel']
+    arguments: ['@app.root', '@module_handler', '@kernel', '@router.builder']
     lazy: true
   extension.list.module:
     class: Drupal\Core\Extension\ModuleExtensionList
@@ -795,6 +792,10 @@ services:
     arguments: ['@language.default']
     tags:
       - { name: service_collector, tag: string_translator, call: addTranslator }
+  database.replica:
+    class: Drupal\Core\Database\Connection
+    factory: Drupal\Core\Database\Database::getConnection
+    arguments: [replica]
   typed_data_manager:
     class: Drupal\Core\TypedData\TypedDataManager
     arguments: ['@container.namespaces', '@cache.discovery', '@module_handler', '@class_resolver']
@@ -939,7 +940,7 @@ services:
       - { name: needs_destruction }
   menu.rebuild_subscriber:
     class: Drupal\Core\EventSubscriber\MenuRouterRebuildSubscriber
-    arguments: ['@lock', '@plugin.manager.menu.link', '@database']
+    arguments: ['@lock', '@plugin.manager.menu.link']
     tags:
       - { name: event_subscriber }
   path.alias_storage:
@@ -1192,7 +1193,7 @@ services:
       - { name: access_check, needs_incoming_request: TRUE }
   maintenance_mode:
     class: Drupal\Core\Site\MaintenanceMode
-    arguments: ['@state']
+    arguments: ['@state', '@current_user']
   maintenance_mode_subscriber:
     class: Drupal\Core\EventSubscriber\MaintenanceModeSubscriber
     arguments: ['@maintenance_mode', '@config.factory', '@string_translation', '@url_generator', '@current_user', '@bare_html_page_renderer', '@messenger']

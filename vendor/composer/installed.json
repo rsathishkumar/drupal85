@@ -1402,17 +1402,17 @@
     },
     {
         "name": "drupal/core",
-        "version": "8.7.x-dev",
-        "version_normalized": "8.7.9999999.9999999-dev",
+        "version": "8.6.2",
+        "version_normalized": "8.6.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/drupal/core.git",
-            "reference": "dca106fcf296630d056660abd38c29dff0d91968"
+            "reference": "356292934802bb1aecc478e88a3cba77442d7c62"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/drupal/core/zipball/dca106fcf296630d056660abd38c29dff0d91968",
-            "reference": "dca106fcf296630d056660abd38c29dff0d91968",
+            "url": "https://api.github.com/repos/drupal/core/zipball/356292934802bb1aecc478e88a3cba77442d7c62",
+            "reference": "356292934802bb1aecc478e88a3cba77442d7c62",
             "shasum": ""
         },
         "require": {
@@ -1578,13 +1578,13 @@
             "jcalderonzumba/gastonjs": "^1.0.2",
             "jcalderonzumba/mink-phantomjs-driver": "^0.3.1",
             "mikey179/vfsstream": "^1.2",
-            "phpspec/prophecy": "^1.7",
+            "phpspec/prophecy": "^1.4",
             "phpunit/phpunit": "^4.8.35 || ^6.5",
             "symfony/css-selector": "^3.4.0",
             "symfony/debug": "^3.4.0",
             "symfony/phpunit-bridge": "^3.4.3"
         },
-        "time": "2018-10-08T16:44:23+00:00",
+        "time": "2018-10-17T22:19:50+00:00",
         "type": "drupal-core",
         "extra": {
             "merge-plugin": {

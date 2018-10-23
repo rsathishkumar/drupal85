@@ -3,7 +3,6 @@
 namespace Drupal\Tests\aggregator\Functional;
 
 use Drupal\aggregator\Entity\Feed;
-use Drupal\Core\Database\Database;
 
 /**
  * Update feed items from a feed.
@@ -44,7 +43,6 @@ class UpdateFeedItemTest extends AggregatorTestBase {
     $view_link = $this->xpath('//div[@class="messages"]//a[contains(@href, :href)]', [':href' => 'aggregator/sources/']);
     $this->assert(isset($view_link), 'The message area contains a link to a feed');
 
-    $connection = Database::getConnection();
     $fid = db_query("SELECT fid FROM {aggregator_feed} WHERE url = :url", [':url' => $edit['url[0][value]']])->fetchField();
     $feed = Feed::load($fid);
 
@@ -53,7 +51,7 @@ class UpdateFeedItemTest extends AggregatorTestBase {
 
     // Sleep for 3 second.
     sleep(3);
-    $connection->update('aggregator_feed')
+    db_update('aggregator_feed')
       ->condition('fid', $feed->id())
       ->fields([
         'checked' => 0,

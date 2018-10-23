@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\locale\Functional;
 
-use Drupal\Core\Database\Database;
 use Drupal\Core\StreamWrapper\PublicStream;
 use Drupal\file\Entity\File;
 use Drupal\Tests\BrowserTestBase;
@@ -279,10 +278,9 @@ EOF;
       'filename' => 'custom_module_one.de.po',
       'version' => '',
     ];
-    $connection = Database::getConnection();
     foreach ($data as $file) {
       $file = array_merge($default, $file);
-      $connection->insert('locale_file')->fields($file)->execute();
+      db_insert('locale_file')->fields($file)->execute();
     }
   }
 

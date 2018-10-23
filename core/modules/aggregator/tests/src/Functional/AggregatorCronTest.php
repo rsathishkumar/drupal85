@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\aggregator\Functional;
 
-use Drupal\Core\Database\Database;
 use Drupal\Tests\Traits\Core\CronRunTrait;
 
 /**
@@ -30,8 +29,7 @@ class AggregatorCronTest extends AggregatorTestBase {
 
     // Test feed locking when queued for update.
     $this->deleteFeedItems($feed);
-    $connection = Database::getConnection();
-    $connection->update('aggregator_feed')
+    db_update('aggregator_feed')
       ->condition('fid', $feed->id())
       ->fields([
         'queued' => REQUEST_TIME,
@@ -39,7 +37,7 @@ class AggregatorCronTest extends AggregatorTestBase {
       ->execute();
     $this->cronRun();
     $this->assertEqual(0, db_query('SELECT COUNT(*) FROM {aggregator_item} WHERE fid = :fid', [':fid' => $feed->id()])->fetchField());
-    $connection->update('aggregator_feed')
+    db_update('aggregator_feed')
       ->condition('fid', $feed->id())
       ->fields([
         'queued' => 0,

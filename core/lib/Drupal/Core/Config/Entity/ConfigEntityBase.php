@@ -10,7 +10,6 @@ use Drupal\Core\Config\ConfigDuplicateUUIDException;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
-use Drupal\Core\Entity\SynchronizableEntityTrait;
 use Drupal\Core\Plugin\PluginDependencyTrait;
 
 /**
@@ -23,7 +22,6 @@ abstract class ConfigEntityBase extends Entity implements ConfigEntityInterface 
   use PluginDependencyTrait {
     addDependency as addDependencyTrait;
   }
-  use SynchronizableEntityTrait;
 
   /**
    * The original ID of the configuration entity.
@@ -49,6 +47,14 @@ abstract class ConfigEntityBase extends Entity implements ConfigEntityInterface 
    * @var string
    */
   protected $uuid;
+
+  /**
+   * Whether the config is being created, updated or deleted through the
+   * import process.
+   *
+   * @var bool
+   */
+  private $isSyncing = FALSE;
 
   /**
    * Whether the config is being deleted by the uninstall process.
@@ -196,6 +202,22 @@ abstract class ConfigEntityBase extends Entity implements ConfigEntityInterface 
    */
   public function status() {
     return !empty($this->status);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setSyncing($syncing) {
+    $this->isSyncing = $syncing;
+
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isSyncing() {
+    return $this->isSyncing;
   }
 
   /**

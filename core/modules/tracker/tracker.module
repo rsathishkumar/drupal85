@@ -55,22 +55,21 @@ function tracker_cron() {
       ->execute();
 
     $nodes = Node::loadMultiple($nids);
-    $connection = \Drupal::database();
     foreach ($nodes as $nid => $node) {
 
       // Calculate the changed timestamp for this node.
       $changed = _tracker_calculate_changed($node);
 
       // Remove existing data for this node.
-      $connection->delete('tracker_node')
+      db_delete('tracker_node')
         ->condition('nid', $nid)
         ->execute();
-      $connection->delete('tracker_user')
+      db_delete('tracker_user')
         ->condition('nid', $nid)
         ->execute();
 
       // Insert the node-level data.
-      $connection->insert('tracker_node')
+      db_insert('tracker_node')
         ->fields([
           'nid' => $nid,
           'published' => (int) $node->isPublished(),
@@ -79,7 +78,7 @@ function tracker_cron() {
         ->execute();
 
       // Insert the user-level data for the node's author.
-      $connection->insert('tracker_user')
+      db_insert('tracker_user')
         ->fields([
           'nid' => $nid,
           'published' => (int) $node->isPublished(),
@@ -102,7 +101,7 @@ function tracker_cron() {
         ->groupBy('uid')
         ->execute();
       if ($result) {
-        $query = $connection->insert('tracker_user');
+        $query = db_insert('tracker_user');
         foreach ($result as $row) {
           $query->fields([
             'uid' => $row['uid'],
@@ -200,11 +199,10 @@ function tracker_node_update(NodeInterface $node, $arg = 0) {
  * Deletes tracking information for a node.
  */
 function tracker_node_predelete(EntityInterface $node, $arg = 0) {
-  $connection = \Drupal::database();
-  $connection->delete('tracker_node')
+  db_delete('tracker_node')
     ->condition('nid', $node->id())
     ->execute();
-  $connection->delete('tracker_user')
+  db_delete('tracker_user')
     ->condition('nid', $node->id())
     ->execute();
 }
@@ -252,7 +250,6 @@ function tracker_comment_delete(CommentInterface $comment) {
  *   The node updated timestamp or comment timestamp.
  */
 function _tracker_add($nid, $uid, $changed) {
-  $connection = \Drupal::database();
   // @todo This should be actually filtering on the desired language and just
   //   fall back to the default language.
   $node = db_query('SELECT nid, status, uid, changed FROM {node_field_data} WHERE nid = :nid AND default_langcode = 1 ORDER BY changed DESC, status DESC', [':nid' => $nid])->fetchObject();
@@ -262,7 +259,7 @@ function _tracker_add($nid, $uid, $changed) {
   $changed = max($node->changed, $changed);
 
   // Update the node-level data.
-  $connection->merge('tracker_node')
+  db_merge('tracker_node')
     ->key('nid', $nid)
     ->fields([
       'changed' => $changed,
@@ -271,7 +268,7 @@ function _tracker_add($nid, $uid, $changed) {
     ->execute();
 
   // Create or update the user-level data, first for the user posting.
-  $connection->merge('tracker_user')
+  db_merge('tracker_user')
     ->keys([
       'nid' => $nid,
       'uid' => $uid,
@@ -282,7 +279,7 @@ function _tracker_add($nid, $uid, $changed) {
     ])
     ->execute();
   // Update the times for all the other users tracking the post.
-  $connection->update('tracker_user')
+  db_update('tracker_user')
     ->condition('nid', $nid)
     ->fields([
       'changed' => $changed,
@@ -325,7 +322,6 @@ function _tracker_calculate_changed($node) {
  */
 function _tracker_remove($nid, $uid = NULL, $changed = NULL) {
   $node = Node::load($nid);
-  $connection = \Drupal::database();
 
   // The user only keeps their subscription if the node exists.
   if ($node) {
@@ -347,7 +343,7 @@ function _tracker_remove($nid, $uid = NULL, $changed = NULL) {
 
     // If we haven't found a reason to keep the user's subscription, delete it.
     if (!$keep_subscription) {
-      $connection->delete('tracker_user')
+      db_delete('tracker_user')
         ->condition('nid', $nid)
         ->condition('uid', $uid)
         ->execute();
@@ -367,14 +363,14 @@ function _tracker_remove($nid, $uid = NULL, $changed = NULL) {
 
       // And then we push the out the new changed timestamp to our denormalized
       // tables.
-      $connection->update('tracker_node')
+      db_update('tracker_node')
         ->fields([
           'changed' => $changed,
           'published' => $node->isPublished(),
         ])
         ->condition('nid', $nid)
         ->execute();
-      $connection->update('tracker_node')
+      db_update('tracker_node')
         ->fields([
           'changed' => $changed,
           'published' => $node->isPublished(),
@@ -385,10 +381,10 @@ function _tracker_remove($nid, $uid = NULL, $changed = NULL) {
   }
   else {
     // If the node doesn't exist, remove everything.
-    $connection->delete('tracker_node')
+    db_delete('tracker_node')
       ->condition('nid', $nid)
       ->execute();
-    $connection->delete('tracker_user')
+    db_delete('tracker_user')
       ->condition('nid', $nid)
       ->execute();
   }

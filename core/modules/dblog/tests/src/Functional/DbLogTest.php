@@ -4,11 +4,11 @@ namespace Drupal\Tests\dblog\Functional;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
-use Drupal\Core\Database\Database;
 use Drupal\Core\Logger\RfcLogLevel;
 use Drupal\Core\Url;
 use Drupal\dblog\Controller\DbLogController;
 use Drupal\Tests\BrowserTestBase;
+use Drupal\Tests\Traits\Core\CronRunTrait;
 
 /**
  * Generate events and verify dblog entries; verify user access to log reports
@@ -17,6 +17,7 @@ use Drupal\Tests\BrowserTestBase;
  * @group dblog
  */
 class DbLogTest extends BrowserTestBase {
+  use CronRunTrait;
   use FakeLogEntries;
 
   /**
@@ -66,6 +67,7 @@ class DbLogTest extends BrowserTestBase {
 
     $row_limit = 100;
     $this->verifyRowLimit($row_limit);
+    $this->verifyCron($row_limit);
     $this->verifyEvents();
     $this->verifyReports();
     $this->verifyBreadcrumbs();
@@ -133,6 +135,52 @@ class DbLogTest extends BrowserTestBase {
     // Check row limit variable.
     $current_limit = $this->config('dblog.settings')->get('row_limit');
     $this->assertTrue($current_limit == $row_limit, format_string('[Cache] Row limit variable of @count equals row limit of @limit', ['@count' => $current_limit, '@limit' => $row_limit]));
+  }
+
+  /**
+   * Verifies that cron correctly applies the database log row limit.
+   *
+   * @param int $row_limit
+   *   The row limit.
+   */
+  private function verifyCron($row_limit) {
+    // Generate additional log entries.
+    $this->generateLogEntries($row_limit + 10);
+    // Verify that the database log row count exceeds the row limit.
+    $count = db_query('SELECT COUNT(wid) FROM {watchdog}')->fetchField();
+    $this->assertTrue($count > $row_limit, format_string('Dblog row count of @count exceeds row limit of @limit', ['@count' => $count, '@limit' => $row_limit]));
+
+    // Get the number of enabled modules. Cron adds a log entry for each module.
+    $list = \Drupal::moduleHandler()->getImplementations('cron');
+    $module_count = count($list);
+    $cron_detailed_count = $this->runCron();
+    $this->assertTrue($cron_detailed_count == $module_count + 2, format_string('Cron added @count of @expected new log entries', ['@count' => $cron_detailed_count, '@expected' => $module_count + 2]));
+
+    // Test disabling of detailed cron logging.
+    $this->config('system.cron')->set('logging', 0)->save();
+    $cron_count = $this->runCron();
+    $this->assertTrue($cron_count = 1, format_string('Cron added @count of @expected new log entries', ['@count' => $cron_count, '@expected' => 1]));
+  }
+
+  /**
+   * Runs cron and returns number of new log entries.
+   *
+   * @return int
+   *   Number of new watchdog entries.
+   */
+  private function runCron() {
+    // Get last ID to compare against; log entries get deleted, so we can't
+    // reliably add the number of newly created log entries to the current count
+    // to measure number of log entries created by cron.
+    $last_id = db_query('SELECT MAX(wid) FROM {watchdog}')->fetchField();
+
+    // Run a cron job.
+    $this->cronRun();
+
+    // Get last ID after cron was run.
+    $current_id = db_query('SELECT MAX(wid) FROM {watchdog}')->fetchField();
+
+    return $current_id - $last_id;
   }
 
   /**
@@ -265,7 +313,7 @@ class DbLogTest extends BrowserTestBase {
       'link' => $link,
     ]);
 
-    $result = Database::getConnection()->queryRange('SELECT wid FROM {watchdog} ORDER BY wid DESC', 0, 1);
+    $result = db_query_range('SELECT wid FROM {watchdog} ORDER BY wid DESC', 0, 1);
     $this->drupalGet('admin/reports/dblog/event/' . $result->fetchField());
 
     // Check if the link exists (unescaped).
@@ -304,7 +352,7 @@ class DbLogTest extends BrowserTestBase {
       $ids[] = $row->wid;
     }
     $count_before = (isset($ids)) ? count($ids) : 0;
-    $this->assertTrue($count_before > 0, format_string('DBLog contains @count records for @name', ['@count' => $count_before, '@name' => $user->getAccountName()]));
+    $this->assertTrue($count_before > 0, format_string('DBLog contains @count records for @name', ['@count' => $count_before, '@name' => $user->getUsername()]));
 
     // Log in the admin user.
     $this->drupalLogin($this->adminUser);
@@ -477,6 +525,7 @@ class DbLogTest extends BrowserTestBase {
       'variables'   => [],
       'severity'    => RfcLogLevel::NOTICE,
       'link'        => NULL,
+      'user'        => $this->adminUser,
       'uid'         => $this->adminUser->id(),
       'request_uri' => $base_root . \Drupal::request()->getRequestUri(),
       'referer'     => \Drupal::request()->server->get('HTTP_REFERER'),
@@ -505,7 +554,7 @@ class DbLogTest extends BrowserTestBase {
     $this->drupalLogin($this->adminUser);
 
     // Clear the log to ensure that only generated entries will be found.
-    Database::getConnection()->delete('watchdog')->execute();
+    db_delete('watchdog')->execute();
 
     // Generate 9 random watchdog entries.
     $type_names = [];

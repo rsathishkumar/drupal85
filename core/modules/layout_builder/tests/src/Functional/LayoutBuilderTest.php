@@ -22,7 +22,6 @@ class LayoutBuilderTest extends BrowserTestBase {
     'layout_builder_views_test',
     'layout_test',
     'block',
-    'block_test',
     'node',
     'layout_builder_test',
   ];
@@ -91,7 +90,7 @@ class LayoutBuilderTest extends BrowserTestBase {
     // The body field is only present once.
     $assert_session->elementsCount('css', '.field--name-body', 1);
     // The extra field is only present once.
-    $assert_session->pageTextContainsOnce('Placeholder for the "Extra label" field');
+    $this->assertTextAppearsOnce('Placeholder for the "Extra label" field');
     // Save the defaults.
     $assert_session->linkExists('Save Layout');
     $this->clickLink('Save Layout');
@@ -106,7 +105,7 @@ class LayoutBuilderTest extends BrowserTestBase {
     // The body field is only present once.
     $assert_session->elementsCount('css', '.field--name-body', 1);
     // The extra field is only present once.
-    $assert_session->pageTextContainsOnce('Placeholder for the "Extra label" field');
+    $this->assertTextAppearsOnce('Placeholder for the "Extra label" field');
 
     // Add a new block.
     $assert_session->linkExists('Add Block');
@@ -192,21 +191,11 @@ class LayoutBuilderTest extends BrowserTestBase {
 
     // Reverting the override returns it to the defaults.
     $this->clickLink('Layout');
-    $assert_session->linkExists('Add Block');
-    $this->clickLink('Add Block');
-    $assert_session->linkExists('ID');
-    $this->clickLink('ID');
-    $page->pressButton('Add Block');
-    // The title field is present.
-    $assert_session->elementExists('css', '.field--name-nid');
-    $assert_session->pageTextContains('ID');
-    $assert_session->pageTextContains('1');
     $assert_session->linkExists('Revert to defaults');
     $this->clickLink('Revert to defaults');
     $page->pressButton('Revert');
     $assert_session->pageTextContains('The layout has been reverted back to defaults.');
     $assert_session->elementExists('css', '.field--name-title');
-    $assert_session->elementNotExists('css', '.field--name-nid');
     $assert_session->pageTextContains('The first node body');
     $assert_session->pageTextContains('Powered by Drupal');
     $assert_session->pageTextContains('Placeholder for the "Extra label" field');
@@ -234,33 +223,6 @@ class LayoutBuilderTest extends BrowserTestBase {
     $this->drupalGet("$field_ui_prefix/display-layout/default");
     $assert_session->pageTextNotContains('My text field');
     $assert_session->elementNotExists('css', '.field--name-field-my-text');
-  }
-
-  /**
-   * Tests that a non-default view mode works as expected.
-   */
-  public function testNonDefaultViewMode() {
-    $assert_session = $this->assertSession();
-    $page = $this->getSession()->getPage();
-
-    $this->drupalLogin($this->drupalCreateUser([
-      'configure any layout',
-      'administer node display',
-    ]));
-
-    $field_ui_prefix = 'admin/structure/types/manage/bundle_with_section_field';
-    // Allow overrides for the layout.
-    $this->drupalGet("$field_ui_prefix/display/default");
-    $page->checkField('layout[enabled]');
-    $page->pressButton('Save');
-    $page->checkField('layout[allow_custom]');
-    $page->pressButton('Save');
-
-    $this->clickLink('Teaser');
-    // Enabling Layout Builder for the default mode does not affect the teaser.
-    $assert_session->addressEquals("$field_ui_prefix/display/teaser");
-    $assert_session->elementNotExists('css', '#layout-builder__layout');
-    $assert_session->checkboxNotChecked('layout[enabled]');
   }
 
   /**
@@ -484,46 +446,13 @@ class LayoutBuilderTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the usage of placeholders for empty blocks.
+   * Asserts that a text string only appears once on the page.
    *
-   * @see \Drupal\Core\Block\BlockPluginInterface::getPlaceholderString()
-   * @see \Drupal\layout_builder\EventSubscriber\BlockComponentRenderArray::onBuildRender()
+   * @param string $needle
+   *   The string to look for.
    */
-  public function testBlockPlaceholder() {
-    $assert_session = $this->assertSession();
-    $page = $this->getSession()->getPage();
-
-    $this->drupalLogin($this->drupalCreateUser([
-      'configure any layout',
-      'administer node display',
-    ]));
-
-    $field_ui_prefix = 'admin/structure/types/manage/bundle_with_section_field';
-    $this->drupalPostForm("$field_ui_prefix/display/default", ['layout[enabled]' => TRUE], 'Save');
-
-    // Customize the default view mode.
-    $this->drupalGet("$field_ui_prefix/display-layout/default");
-
-    // Add a block whose content is controlled by state and is empty by default.
-    $this->clickLink('Add Block');
-    $this->clickLink('Test block caching');
-    $page->fillField('settings[label]', 'The block label');
-    $page->pressButton('Add Block');
-
-    $block_content = 'I am content';
-    $placeholder_content = 'Placeholder for the "The block label" block';
-
-    // The block placeholder is displayed and there is no content.
-    $assert_session->pageTextContains($placeholder_content);
-    $assert_session->pageTextNotContains($block_content);
-
-    // Set block content and reload the page.
-    \Drupal::state()->set('block_test.content', $block_content);
-    $this->getSession()->reload();
-
-    // The block placeholder is no longer displayed and the content is visible.
-    $assert_session->pageTextNotContains($placeholder_content);
-    $assert_session->pageTextContains($block_content);
+  protected function assertTextAppearsOnce($needle) {
+    $this->assertEquals(1, substr_count($this->getSession()->getPage()->getContent(), $needle), "'$needle' only appears once on the page.");
   }
 
 }

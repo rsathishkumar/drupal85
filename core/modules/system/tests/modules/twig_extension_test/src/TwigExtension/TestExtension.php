@@ -21,7 +21,7 @@ class TestExtension extends \Twig_Extension {
    */
   public function getFunctions() {
     return [
-      new \Twig_SimpleFunction('testfunc', [$this, 'testFunction']),
+      'testfunc' => new \Twig_Function_Function(['Drupal\twig_extension_test\TwigExtension\TestExtension', 'testFunction']),
     ];
   }
 
@@ -39,7 +39,7 @@ class TestExtension extends \Twig_Extension {
    */
   public function getFilters() {
     return [
-      new \Twig_SimpleFilter('testfilter', [$this, 'testFilter']),
+      'testfilter' => new \Twig_Filter_Function(['Drupal\twig_extension_test\TwigExtension\TestExtension', 'testFilter']),
     ];
   }
 
