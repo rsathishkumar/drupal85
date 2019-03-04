@@ -292,35 +292,4 @@ class NodeLanguageTest extends NodeTestBase {
     }
   }
 
-  public function testContentLinksInViews() {
-    $view = Views::getView('test_language');
-    $view->setDisplay('page_1');
-
-    $options = [
-      'id' => 'view_node',
-      'table' => 'node',
-      'field' => 'view_node'
-    ];
-
-    $view->initHandlers();
-    $view->removeHandler('page_1', 'argument', 'langcode');
-    $view->addHandler('page_1', 'field', 'node', 'view_node', $options);
-    $view->storage->setStatus(TRUE);
-    $view->build();
-    $view->save();
-
-    // Make sure view behaves as expected.
-    $this->drupalGet('test-language');
-    $page = $this->getSession()->getPage();
-    $link = $page->find('css', '.views-field-view-node .field-content a[href="/es/node/1"]');
-    $this->assertNotEmpty($link, 'Link not correct for Spain Language');
-
-    $link = $page->find('css', '.views-field-view-node .field-content a[href="/node/4"]');
-    $this->assertNotEmpty($link, 'Link not correct for default English Language');
-
-    $link = $page->find('css', '.views-field-view-node .field-content a[href="/fr/node/1"]');
-    $this->assertNotEmpty($link, 'Link not correct for French Language');
-
-  }
-
 }
