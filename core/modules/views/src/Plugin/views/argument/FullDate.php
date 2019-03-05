@@ -31,9 +31,6 @@ class FullDate extends Date {
    * Provide a link to the next level of the view
    */
   public function title() {
-    if ($this->isException()) {
-      return parent::title();
-    }
     return format_date(strtotime($this->argument . " 00:00:00 UTC"), 'custom', $this->format, 'UTC');
   }
 
