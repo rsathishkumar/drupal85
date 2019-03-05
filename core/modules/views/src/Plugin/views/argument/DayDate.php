@@ -32,6 +32,9 @@ class DayDate extends Date {
    * Provide a link to the next level of the view
    */
   public function title() {
+    if (!is_numeric($this->argument)) {
+      return parent::title();
+    }
     $day = str_pad($this->argument, 2, '0', STR_PAD_LEFT);
     return format_date(strtotime("2005" . "05" . $day . " 00:00:00 UTC"), 'custom', $this->format, 'UTC');
   }
