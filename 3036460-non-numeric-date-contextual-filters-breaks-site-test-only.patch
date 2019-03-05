@@ -1,0 +1,119 @@
+diff --git a/core/modules/block/tests/modules/block_test_views/test_views/views.view.test_view_block_with_context.yml b/core/modules/block/tests/modules/block_test_views/test_views/views.view.test_view_block_with_context.yml
+index 4f8a8411..cbf845bd 100644
+--- a/core/modules/block/tests/modules/block_test_views/test_views/views.view.test_view_block_with_context.yml
++++ b/core/modules/block/tests/modules/block_test_views/test_views/views.view.test_view_block_with_context.yml
+@@ -431,3 +431,57 @@ display:
+         - 'user.node_grants:view'
+         - user.permissions
+       tags: {  }
++  block_3:
++    display_plugin: block
++    id: block_3
++    display_title: 'Block 3'
++    position: 3
++    display_options:
++      display_extenders: {  }
++      arguments:
++        created_month:
++          id: created_month
++          table: node_field_data
++          field: created_month
++          relationship: none
++          group_type: group
++          admin_label: ''
++          default_action: ignore
++          exception:
++            value: all
++            title_enable: false
++            title: All
++          title_enable: false
++          title: ''
++          default_argument_type: fixed
++          default_argument_options:
++            argument: ''
++          default_argument_skip_url: false
++          summary_options:
++            base_path: ''
++            count: true
++            items_per_page: 25
++            override: false
++          summary:
++            sort_order: asc
++            number_of_records: 0
++            format: default_summary
++          specify_validation: true
++          validate:
++            type: numeric
++            fail: 'not found'
++          validate_options: {  }
++          entity_type: node
++          entity_field: created_month
++          plugin_id: date
++      defaults:
++        arguments: false
++    cache_metadata:
++      max-age: -1
++      contexts:
++        - 'languages:language_content'
++        - 'languages:language_interface'
++        - url
++        - 'user.node_grants:view'
++        - user.permissions
++      tags: {  }
+diff --git a/core/modules/views/tests/src/Functional/Plugin/ContextualFiltersBlockContextTest.php b/core/modules/views/tests/src/Functional/Plugin/ContextualFiltersBlockContextTest.php
+index 41356b69..bc574a95 100644
+--- a/core/modules/views/tests/src/Functional/Plugin/ContextualFiltersBlockContextTest.php
++++ b/core/modules/views/tests/src/Functional/Plugin/ContextualFiltersBlockContextTest.php
+@@ -150,4 +150,52 @@ public function testBlockContext() {
+     $this->assertFalse($context->isRequired(), 'Context is not required.');
+   }
+ 
++  /**
++   * Tests exposed context.
++   *
++   * added test for https://www.drupal.org/project/drupal/issues/3036460
++   */
++  public function testBlockContextWithDate() {
++    $this->drupalLogin($this->drupalCreateUser(['administer views', 'administer blocks']));
++
++    // Check if context was correctly propagated to the block.
++    $definition = $this->container->get('plugin.manager.block')
++      ->getDefinition('views_block:test_view_block_with_context-block_3');
++
++    $this->assertTrue($definition['context']['created_month'] instanceof ContextDefinitionInterface);
++    /** @var \Drupal\Core\Plugin\Context\ContextDefinitionInterface $context */
++    $context = $definition['context']['created_month'];
++    $this->assertEqual($context->getDataType(), 'integer', 'Context definition data type is correct.');
++    $this->assertEqual($context->getLabel(), 'Content: Created month', 'Context definition label is correct.');
++    $this->assertFalse($context->isRequired(), 'Context is not required.');
++
++    // Place test block via block UI to check if contexts are correctly exposed.
++    $this->drupalGet(
++      'admin/structure/block/add/views_block:test_view_block_with_context-block_3/classy',
++      ['query' => ['region' => 'content']]
++    );
++    $this->drupalPostForm(NULL, [], 'Save block');
++
++    // Check if mapping saved correctly.
++    /** @var \Drupal\block\BlockInterface $block */
++
++    $block = $this->container->get('entity_type.manager')
++      ->getStorage('block')
++      ->load('views_block__test_view_block_with_context_block_3');
++    $expected_settings = [
++      'id' => 'views_block:test_view_block_with_context-block_3',
++      'label' => '',
++      'provider' => 'views',
++      'label_display' => 'visible',
++      'views_label' => '',
++      'items_per_page' => 'none',
++      'context_mapping' => [],
++    ];
++    $this->assertEqual($block->getPlugin()->getConfiguration(), $expected_settings, 'Block settings are correct.');
++
++    // Make sure view doesn't break.
++    $this->drupalGet('<front>');
++    $this->assertResponse(200);
++  }
++
+ }
