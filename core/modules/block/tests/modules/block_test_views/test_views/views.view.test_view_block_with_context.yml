@@ -439,7 +439,7 @@ display:
     display_options:
       display_extenders: {  }
       arguments:
-        created:
+        created_month:
           id: created_month
           table: node_field_data
           field: created_month
