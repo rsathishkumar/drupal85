@@ -24,6 +24,11 @@ class ContextualFiltersBlockContextTest extends ViewTestBase {
   public static $modules = ['block', 'block_test_views', 'views_ui', 'node'];
 
   /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'classy';
+
+  /**
    * Views used by this test.
    *
    * @var array
@@ -81,9 +86,9 @@ class ContextualFiltersBlockContextTest extends ViewTestBase {
     // Check if context was correctly propagated to the block.
     $definition = $this->container->get('plugin.manager.block')
       ->getDefinition('views_block:test_view_block_with_context-block_1');
-    $this->assertTrue($definition['context']['nid'] instanceof ContextDefinitionInterface);
+    $this->assertTrue($definition['context_definitions']['nid'] instanceof ContextDefinitionInterface);
     /** @var \Drupal\Core\Plugin\Context\ContextDefinitionInterface $context */
-    $context = $definition['context']['nid'];
+    $context = $definition['context_definitions']['nid'];
     $this->assertEqual($context->getDataType(), 'entity:node', 'Context definition data type is correct.');
     $this->assertEqual($context->getLabel(), 'Content: ID', 'Context definition label is correct.');
     $this->assertFalse($context->isRequired(), 'Context is not required.');
@@ -128,74 +133,26 @@ class ContextualFiltersBlockContextTest extends ViewTestBase {
     // based on the numeric plugin and the other based on numeric validation.
     $definition = $this->container->get('plugin.manager.block')
       ->getDefinition('views_block:test_view_block_with_context-block_2');
-    $this->assertTrue($definition['context']['created'] instanceof ContextDefinitionInterface);
+    $this->assertTrue($definition['context_definitions']['created'] instanceof ContextDefinitionInterface);
     /** @var \Drupal\Core\Plugin\Context\ContextDefinitionInterface $context */
-    $context = $definition['context']['created'];
+    $context = $definition['context_definitions']['created'];
     $this->assertEqual($context->getDataType(), 'integer', 'Context definition data type is correct.');
     $this->assertEqual($context->getLabel(), 'Content: Authored on', 'Context definition label is correct.');
     $this->assertFalse($context->isRequired(), 'Context is not required.');
 
-    $this->assertTrue($definition['context']['vid'] instanceof ContextDefinitionInterface);
+    $this->assertTrue($definition['context_definitions']['vid'] instanceof ContextDefinitionInterface);
     /** @var \Drupal\Core\Plugin\Context\ContextDefinitionInterface $context */
-    $context = $definition['context']['vid'];
+    $context = $definition['context_definitions']['vid'];
     $this->assertEqual($context->getDataType(), 'integer', 'Context definition data type is correct.');
     $this->assertEqual($context->getLabel(), 'Content: Revision ID', 'Context definition label is correct.');
     $this->assertFalse($context->isRequired(), 'Context is not required.');
 
-    $this->assertTrue($definition['context']['title'] instanceof ContextDefinitionInterface);
+    $this->assertTrue($definition['context_definitions']['title'] instanceof ContextDefinitionInterface);
     /** @var \Drupal\Core\Plugin\Context\ContextDefinitionInterface $context */
-    $context = $definition['context']['title'];
+    $context = $definition['context_definitions']['title'];
     $this->assertEqual($context->getDataType(), 'string', 'Context definition data type is correct.');
     $this->assertEqual($context->getLabel(), 'Content: Title', 'Context definition label is correct.');
     $this->assertFalse($context->isRequired(), 'Context is not required.');
-  }
-
-  /**
-   * Tests exposed context.
-   *
-   * added test for https://www.drupal.org/project/drupal/issues/3036460
-   */
-  public function testBlockContextWithDate() {
-    $this->drupalLogin($this->drupalCreateUser(['administer views', 'administer blocks']));
-
-    // Check if context was correctly propagated to the block.
-    $definition = $this->container->get('plugin.manager.block')
-      ->getDefinition('views_block:test_view_block_with_context-block_3');
-
-    $this->assertTrue($definition['context']['created_month'] instanceof ContextDefinitionInterface);
-    /** @var \Drupal\Core\Plugin\Context\ContextDefinitionInterface $context */
-    $context = $definition['context']['created_month'];
-    $this->assertEqual($context->getDataType(), 'integer', 'Context definition data type is correct.');
-    $this->assertEqual($context->getLabel(), 'Content: Created month', 'Context definition label is correct.');
-    $this->assertFalse($context->isRequired(), 'Context is not required.');
-
-    // Place test block via block UI to check if contexts are correctly exposed.
-    $this->drupalGet(
-      'admin/structure/block/add/views_block:test_view_block_with_context-block_3/classy',
-      ['query' => ['region' => 'content']]
-    );
-    $this->drupalPostForm(NULL, [], 'Save block');
-
-    // Check if mapping saved correctly.
-    /** @var \Drupal\block\BlockInterface $block */
-
-    $block = $this->container->get('entity_type.manager')
-      ->getStorage('block')
-      ->load('views_block__test_view_block_with_context_block_3');
-    $expected_settings = [
-      'id' => 'views_block:test_view_block_with_context-block_3',
-      'label' => '',
-      'provider' => 'views',
-      'label_display' => 'visible',
-      'views_label' => '',
-      'items_per_page' => 'none',
-      'context_mapping' => [],
-    ];
-    $this->assertEqual($block->getPlugin()->getConfiguration(), $expected_settings, 'Block settings are correct.');
-
-    // Make sure view doesn't break.
-    $this->drupalGet('<front>');
-    $this->assertResponse(200);
   }
 
 }
