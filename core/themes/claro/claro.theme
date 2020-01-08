@@ -175,10 +175,10 @@ function claro_preprocess_entity_add_list(&$variables) {
 /**
  * Implements hook_preprocess_block() for block content.
  *
- * Disables contextual links for all blocks.
+ * Disables contextual links for all blocks except for layout builder blocks.
  */
 function claro_preprocess_block(&$variables) {
-  if (isset($variables['title_suffix']['contextual_links'])) {
+  if (isset($variables['title_suffix']['contextual_links']) && !isset($variables['elements']['#contextual_links']['layout_builder_block'])) {
     unset($variables['title_suffix']['contextual_links']);
     unset($variables['elements']['#contextual_links']);
 
@@ -254,6 +254,11 @@ function claro_element_info_alter(&$type) {
   // Add a pre-render to managed_file.
   if (isset($type['managed_file'])) {
     $type['managed_file']['#pre_render'][] = [ClaroPreRender::class, 'managedFile'];
+  }
+
+  // Add a pre-render to status_messages to alter the placeholder markup.
+  if (isset($type['status_messages'])) {
+    $type['status_messages']['#pre_render'][] = [ClaroPreRender::class, 'messagePlaceholder'];
   }
 }
 
