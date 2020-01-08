@@ -4,3 +4,6 @@ files/*
 sites/**/files/
 vendor/*
 vendor
+sites/*
+.*
+*.patch
