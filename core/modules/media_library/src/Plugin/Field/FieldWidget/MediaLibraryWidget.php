@@ -354,6 +354,7 @@ class MediaLibraryWidget extends WidgetBase implements ContainerFactoryPluginInt
         '#type' => 'html_tag',
         '#tag' => 'button',
         '#value' => $this->t('Show media item weights'),
+        '#access' => count($referenced_entities) > 1,
         '#attributes' => [
           'class' => [
             'link',
