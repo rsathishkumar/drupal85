@@ -195,6 +195,10 @@ class EntityReferenceWidgetTest extends MediaLibraryTestBase {
     // the field contains a single item.
     $wrapper = $assert_session->elementExists('css', '.field--name-field-twin-media');
     $assert_session->buttonNotExists('Show media item weights', $wrapper);
+    $weights = $this
+      ->xpath('//div[(contains(@style,"display: none"))]//input[(contains(@class,"js-media-library-item-weight"))]');
+    $this
+      ->assertEquals(0, count($weights), "Weight field should be shown if there is one item.");
 
     // Remove the selected item.
     $button = $assert_session->buttonExists('Remove', $wrapper);

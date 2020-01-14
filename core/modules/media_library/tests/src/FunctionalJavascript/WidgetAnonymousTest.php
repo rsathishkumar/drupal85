@@ -63,6 +63,11 @@ class WidgetAnonymousTest extends MediaLibraryTestBase {
     $this->waitForText('Dog');
     $assert_session->elementNotExists('css', '.js-media-library-widget-toggle-weight');
 
+    $weights = $this
+      ->xpath('//div[(contains(@style,"display: none"))]//input[(contains(@class,"js-media-library-item-weight"))]');
+    $this
+      ->assertEquals(0, count($weights), "Weight field should be shown if there is one item.");
+
     // Add to the unlimited cardinality field.
     $this->openMediaLibraryForField('field_unlimited_media');
 
