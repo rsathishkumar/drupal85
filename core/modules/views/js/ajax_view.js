@@ -65,7 +65,7 @@
 
     this.settings = settings;
 
-    this.$exposed_form = $('form#views-exposed-form-' + settings.view_name.replace(/_/g, '-') + '-' + settings.view_display_id.replace(/_/g, '-'));
+    this.$exposed_form = $('form#views-exposed-form-' + settings.view_name.replace(/_/g, '-') + '-' + settings.view_display_id.replace(/_+/g, '-'));
     this.$exposed_form.once('exposed-form').each($.proxy(this.attachExposedFormAjax, this));
 
     this.$view.filter($.proxy(this.filterNestedViews, this)).once('ajax-pager').each($.proxy(this.attachPagerAjax, this));
