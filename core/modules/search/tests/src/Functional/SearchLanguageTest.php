@@ -137,7 +137,14 @@ class SearchLanguageTest extends BrowserTestBase {
     ];
     $this->drupalPostForm($path, $edit, t('Save configuration'));
     $this->assertNoFieldChecked('edit-site-default-language-en', 'Default language updated.');
-    $this->drupalPostForm('admin/config/regional/language/delete/en', [], t('Delete'));
+
+    // Changing the default language causes a container rebuild. Therefore need
+    // to rebuild the container in the test environment.
+    $this->rebuildContainer();
+
+    // Delete the en language in the background.
+    $lang = ConfigurableLanguage::load('en');
+    $lang->delete();
   }
 
 }

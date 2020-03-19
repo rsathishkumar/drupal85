@@ -860,19 +860,22 @@ class ConfigTranslationUiTest extends BrowserTestBase {
     $this->drupalLogin($this->adminUser);
 
     // Delete French language
-    $this->drupalPostForm('admin/config/regional/language/delete/fr', [], t('Delete'));
-    $this->assertRaw(t('The %language (%langcode) language has been removed.', ['%language' => 'French', '%langcode' => 'fr']));
+    // Delete the fr language in the background.
+    $lang = ConfigurableLanguage::load('fr');
+    $lang->delete();
 
     // Change default language to Tamil.
     $edit = [
       'site_default_language' => 'ta',
     ];
     $this->drupalPostForm('admin/config/regional/language', $edit, t('Save configuration'));
+    $this->rebuildContainer();
     $this->assertRaw(t('Configuration saved.'));
 
     // Delete English language
-    $this->drupalPostForm('admin/config/regional/language/delete/en', [], t('Delete'));
-    $this->assertRaw(t('The %language (%langcode) language has been removed.', ['%language' => 'English', '%langcode' => 'en']));
+    // Delete the en language in the background.
+    $lang = ConfigurableLanguage::load('en');
+    $lang->delete();
 
     // Visit account setting translation page, this should not
     // throw any notices.

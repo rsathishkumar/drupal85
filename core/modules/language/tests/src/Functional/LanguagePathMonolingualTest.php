@@ -3,6 +3,7 @@
 namespace Drupal\Tests\language\Functional;
 
 use Drupal\Tests\BrowserTestBase;
+use Drupal\language\Entity\ConfigurableLanguage;
 
 /**
  * Confirm that paths are not changed on monolingual non-English sites.
@@ -41,12 +42,13 @@ class LanguagePathMonolingualTest extends BrowserTestBase {
     ];
     $this->drupalPostForm('admin/config/regional/language', $edit, t('Save configuration'));
 
-    // Delete English.
-    $this->drupalPostForm('admin/config/regional/language/delete/en', [], t('Delete'));
-
     // Changing the default language causes a container rebuild. Therefore need
     // to rebuild the container in the test environment.
     $this->rebuildContainer();
+
+    // Delete the en language in the background.
+    $lang = ConfigurableLanguage::load('en');
+    $lang->delete();
 
     // Verify that French is the only language.
     $this->container->get('language_manager')->reset();

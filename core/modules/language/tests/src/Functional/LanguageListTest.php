@@ -171,10 +171,9 @@ class LanguageListTest extends BrowserTestBase {
     $this->assertNoFieldChecked('edit-site-default-language-en', 'Default language updated.');
     $this->assertUrl(Url::fromRoute('entity.configurable_language.collection', [], ['absolute' => TRUE, 'language' => $language])->toString());
 
-    $this->drupalPostForm('admin/config/regional/language/delete/en', [], t('Delete'));
-    // We need raw here because %language and %langcode will add HTML.
-    $t_args = ['%language' => 'English', '%langcode' => 'en'];
-    $this->assertRaw(t('The %language (%langcode) language has been removed.', $t_args), 'The English language has been removed.');
+    // Delete the en language in the background.
+    $lang = ConfigurableLanguage::load('en');
+    $lang->delete();
     $this->rebuildContainer();
 
     // Ensure we can't delete a locked language.

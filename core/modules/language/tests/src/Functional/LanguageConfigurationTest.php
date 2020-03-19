@@ -119,9 +119,9 @@ class LanguageConfigurationTest extends BrowserTestBase {
 
     // Remove English language and add a new Language to check if langcode of
     // Language entity is 'en'.
-    $this->drupalPostForm('admin/config/regional/language/delete/en', [], t('Delete'));
-    $this->rebuildContainer();
-    $this->assertRaw(t('The %language (%langcode) language has been removed.', ['%language' => 'English', '%langcode' => 'en']));
+    // Delete the en language in the background.
+    $lang = ConfigurableLanguage::load('en');
+    $lang->delete();
 
     // Ensure that French language has a weight of 1 after being created through
     // the UI.
